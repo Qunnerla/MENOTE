@@ -367,6 +367,9 @@ input.shake{animation:shake .38s ease}
 .project-pick select{flex:1;min-width:0}
 .mini-plus{flex:none;width:46px;border-radius:14px;background:var(--blue-deep);color:#fff;font-size:24px;line-height:1;display:grid;place-items:center}
 [data-theme="night"] .mini-plus{color:#1B232A}
+.mini-minus{background:color-mix(in srgb,var(--warn) 14%,var(--card));color:var(--warn)}
+[data-theme="night"] .mini-minus{color:var(--warn)}
+.mini-minus:disabled{opacity:.3;cursor:not-allowed;filter:grayscale(.4)}
 .project-create{display:flex;gap:8px;margin-top:9px}
 .project-create.hide{display:none}
 .project-create input{flex:1;min-width:0}
@@ -560,7 +563,7 @@ input.shake{animation:shake .38s ease}
     <div class="f cf-title"><label for="l-title">หัวข้อ</label><input type="text" id="l-title" maxlength="160"></div>
     <div class="f cf-summary"><label for="l-summary">สรุป</label><textarea id="l-summary" maxlength="1200"></textarea></div>
     <div class="f cf-project"><label for="l-project">โปรเจกต์</label>
-      <div class="project-pick"><select id="l-project"></select><button class="mini-plus" id="l-project-add" type="button" aria-label="เพิ่มโปรเจกต์">+</button></div>
+      <div class="project-pick"><select id="l-project"></select><button class="mini-plus" id="l-project-add" type="button" aria-label="เพิ่มโปรเจกต์" title="เพิ่มโปรเจกต์">+</button><button class="mini-plus mini-minus" id="l-project-delete" type="button" aria-label="ลบโปรเจกต์" title="ลบโปรเจกต์">−</button></div>
       <div class="project-create hide" id="project-create"><input type="text" id="l-new-project" maxlength="50" placeholder="ชื่อโปรเจกต์ใหม่"><button class="btn primary" id="l-project-save" type="button">เพิ่ม</button></div>
     </div>
     <div class="f cf-cat"><label for="l-cat">หมวดงาน</label>
@@ -936,7 +939,7 @@ const LOGS=[
     time: "18:21–23:35 น.",
   },
 ];
-let state={tasks:[],theme:'dusty',sound:true,profile:{name:'',cat:'wave'},projColors:{},logEdits:{},logAdds:[],projects:{}};
+let state={tasks:[],theme:'dusty',sound:true,profile:{name:'',cat:'wave'},projColors:{},logEdits:{},logAdds:[],projects:{},hiddenProjects:[],deletedLogKeys:[]};
 let editing=null, saveTimer=null, cheerTimer=null, cheering=false;
 let modalScrollY=0;
 function lockPage(){
@@ -1032,13 +1035,20 @@ const store={
 /* ---------- บันทึกงาน (อ่านอย่างเดียว) ---------- */
 const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const PALETTE=['#7CA3BE','#A698C9','#84B29A','#C79A88','#C2AE72','#8FB59B','#B79BC4','#8AA6B8'];
-const allProjects=()=>Object.assign({},PROJECTS,state.projects||{});
+const allProjects=()=>{
+  const hidden=new Set(state.hiddenProjects||[]);
+  const base={};Object.keys(PROJECTS).forEach(k=>{if(!hidden.has(k))base[k]=PROJECTS[k];});
+  return Object.assign(base,state.projects||{});
+};
 const DEFCOL={};Object.keys(PROJECTS).forEach((k,i)=>{DEFCOL[k]=PALETTE[i%PALETTE.length];});
 const pcol=id=>(state.projColors||{})[id]||DEFCOL[id]||PALETTE[Math.max(0,Object.keys(allProjects()).indexOf(id))%PALETTE.length];
-const effLogs=()=>LOGS.concat(state.logAdds||[]).map(e=>{
+const effLogs=()=>{
+ const deleted=new Set(state.deletedLogKeys||[]);
+ return LOGS.concat(state.logAdds||[]).filter(e=>!deleted.has(e.id||e.key||e.date)).map(e=>{
   const key=e.id||e.key||e.date;
   return Object.assign({},e,{key},(state.logEdits||{})[key]||{});
-});
+ });
+};
 let logState={proj:'all',q:'',month:'all',order:'desc'};
 let openLog=null;
 
@@ -1176,7 +1186,15 @@ function commitCategoryInput(){
 }
 function renderProjectOptions(picked){
   const projects=allProjects();
-  $('#l-project').innerHTML=Object.keys(projects).map(k=>`<option value="${k}" ${k===picked?'selected':''}>${esc(projects[k].name)}</option>`).join('');
+  const ids=Object.keys(projects), selected=projects[picked]?picked:(ids[0]||'');
+  $('#l-project').innerHTML=ids.map(k=>`<option value="${k}" ${k===selected?'selected':''}>${esc(projects[k].name)}</option>`).join('');
+  syncProjectDeleteButton();
+}
+function syncProjectDeleteButton(){
+  const btn=$('#l-project-delete'), ids=Object.keys(allProjects());
+  if(!btn)return;
+  btn.disabled=ids.length<=1||!$('#l-project').value;
+  btn.title=ids.length<=1?'ต้องเหลืออย่างน้อย 1 โปรเจกต์':'ลบโปรเจกต์นี้';
 }
 function parseTimes(t){
   const m=String(t||'').match(/(\d{2}:\d{2})/g);
@@ -1240,6 +1258,32 @@ $('#l-project-add').onclick=()=>{
   buzz(8,'tap');
   $('#project-create').classList.toggle('hide');
   if(!$('#project-create').classList.contains('hide'))setTimeout(()=>$('#l-new-project').focus(),50);
+};
+$('#l-project').addEventListener('change',syncProjectDeleteButton);
+$('#l-project-delete').onclick=()=>{
+  const id=$('#l-project').value, projects=allProjects(), ids=Object.keys(projects);
+  if(!id||!projects[id])return;
+  if(ids.length<=1){toast('ต้องเหลืออย่างน้อย 1 โปรเจกต์',true);return;}
+  const name=projects[id].name;
+  const rows=effLogs().filter(x=>x.project===id);
+  const note=rows.length?` และบันทึก ${rows.length} รายการในโปรเจกต์นี้`:'';
+  if(!window.confirm(`ลบโปรเจกต์ “${name}”${note} ใช่ไหม?`))return;
+  const keys=new Set(rows.map(x=>x.key||x.id||x.date));
+  state.logAdds=(state.logAdds||[]).filter(x=>!keys.has(x.id||x.key||x.date));
+  state.deletedLogKeys=[...new Set((state.deletedLogKeys||[]).concat(
+    LOGS.map(x=>x.id||x.key||x.date).filter(k=>keys.has(k))
+  ))];
+  keys.forEach(k=>{if(state.logEdits)delete state.logEdits[k];});
+  if(Object.prototype.hasOwnProperty.call(PROJECTS,id)){
+    state.hiddenProjects=[...new Set((state.hiddenProjects||[]).concat(id))];
+  }else if(state.projects){
+    delete state.projects[id];
+  }
+  if(state.projColors)delete state.projColors[id];
+  if(logState.proj===id)logState.proj='all';
+  const next=Object.keys(allProjects())[0]||'';
+  renderProjectOptions(next);renderPCol();renderLogs();save();
+  buzz(12,'del');toast(`ลบโปรเจกต์ ${name} แล้ว`);
 };
 $('#l-project-save').onclick=()=>{
   const name=$('#l-new-project').value.trim();
@@ -1345,6 +1389,8 @@ async function load(){
   state.logAdds=Array.isArray(state.logAdds)?state.logAdds:[];
   state.logEdits=state.logEdits||{};
   state.projects=state.projects||{};
+  state.hiddenProjects=Array.isArray(state.hiddenProjects)?state.hiddenProjects:[];
+  state.deletedLogKeys=Array.isArray(state.deletedLogKeys)?state.deletedLogKeys:[];
   applyTheme();renderProfile();renderSound();render();renderPCol();renderLogs();shareView();
   setTimeout(()=>{const sp=$('#splash');sp.classList.add('gone');setTimeout(()=>sp.remove(),500);},700);
 }
