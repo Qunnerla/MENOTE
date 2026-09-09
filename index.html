@@ -297,7 +297,7 @@ input.shake{animation:shake .38s ease}
 .ro .nav,.ro .fab{display:none}
 #s-share{padding-bottom:40px}
 .ro-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.ro-head img{width:52px;height:52px;object-fit:contain}
+.ro-head img{width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 8px 12px rgba(60,90,110,.14));animation:float 4.5s ease-in-out infinite}
 .ro-head b{display:block;font-family:"Mali",cursive;font-size:22px;font-weight:600}
 .ro-head span{color:var(--muted);font-size:12.5px}
 .ro-foot{text-align:center;color:var(--muted);font-size:12px;margin:22px 0 0}
@@ -874,8 +874,9 @@ document.body.addEventListener('click',e=>{
   if(tg){
     const d=tg.dataset.toggle;
     openLog=openLog===d?null:d;
-    buzz(8,'tap');
+    buzz(11,'pop');
     document.querySelectorAll('.log').forEach(c=>c.classList.toggle('open',c.dataset.log===openLog));
+    play(tg.closest('.log'),'bump',400);
     return;
   }
   const sh=e.target.closest('[data-share]');
@@ -1106,7 +1107,7 @@ document.body.addEventListener('click',e=>{
     play(go.querySelector('svg'),'popsvg',420);
     window.scrollTo(0,0);return;
   }
-  const kitty=e.target.closest('.mascot,.empty img,#pf-cat');
+  const kitty=e.target.closest('.mascot,.empty img,#pf-cat,.ro-head img');
   if(kitty){buzz(10);meow();play(kitty,'pop',500);return;}
   const th=e.target.closest('[data-theme]');
   if(th){buzz(12,'tap');state.theme=th.dataset.theme;applyTheme();save();return;}
