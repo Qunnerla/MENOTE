@@ -9,6 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;600&family=Noto+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
+  --a1:rgba(124,163,190,.55); --a2:rgba(166,152,201,.45);
+  --a3:rgba(140,178,199,.38); --a4:rgba(186,170,214,.28);
   --bg:#EEF4F7; --surface:#FFFFFF; --tint:#DDE9F0; --line:#E3ECF1;
   --blue:#7CA3BE; --blue-deep:#4E7791; --ink:#28383F; --muted:#87979F;
   --ok:#8FB59B; --warn:#C98F86;
@@ -16,9 +18,9 @@
   --r:20px; --nav:64px;
   --spring:cubic-bezier(.34,1.62,.58,1);
 }
-[data-theme="mint"]{--bg:#EEF5F1;--surface:#fff;--tint:#DCEBE2;--line:#E1EEE7;--blue:#84B29A;--blue-deep:#4F8069;--ink:#283B33;--muted:#88998F;--ok:#7FA98D;}
-[data-theme="peach"]{--bg:#F7F1EE;--surface:#fff;--tint:#F1E1DA;--line:#EFE3DE;--blue:#C79A88;--blue-deep:#96695A;--ink:#3E312C;--muted:#9C8A83;--ok:#A3AE8C;}
-[data-theme="lilac"]{--bg:#F2F0F7;--surface:#fff;--tint:#E4E0F0;--line:#E8E4F0;--blue:#9A92C2;--blue-deep:#6A6197;--ink:#332F42;--muted:#8F8AA0;--ok:#8FAF9E;}
+[data-theme="mint"]{--a1:rgba(132,178,154,.5);--a2:rgba(160,190,205,.4);--a3:rgba(150,190,170,.34);--a4:rgba(176,200,190,.26);--bg:#EEF5F1;--surface:#fff;--tint:#DCEBE2;--line:#E1EEE7;--blue:#84B29A;--blue-deep:#4F8069;--ink:#283B33;--muted:#88998F;--ok:#7FA98D;}
+[data-theme="peach"]{--a1:rgba(199,154,136,.48);--a2:rgba(186,170,214,.36);--a3:rgba(205,175,150,.32);--a4:rgba(200,180,205,.24);--bg:#F7F1EE;--surface:#fff;--tint:#F1E1DA;--line:#EFE3DE;--blue:#C79A88;--blue-deep:#96695A;--ink:#3E312C;--muted:#9C8A83;--ok:#A3AE8C;}
+[data-theme="lilac"]{--a1:rgba(166,152,201,.5);--a2:rgba(143,164,201,.42);--a3:rgba(178,166,210,.34);--a4:rgba(150,170,205,.26);--bg:#F2F0F7;--surface:#fff;--tint:#E4E0F0;--line:#E8E4F0;--blue:#9A92C2;--blue-deep:#6A6197;--ink:#332F42;--muted:#8F8AA0;--ok:#8FAF9E;}
 [data-theme="night"]{--bg:#1B232A;--surface:#232D36;--tint:#2C3945;--line:#2E3B46;--blue:#7FA6C2;--blue-deep:#A6C6DC;--ink:#E7EEF3;--muted:#8FA1AD;--ok:#8FB59B;--warn:#D3968D;--s1:#DB9E94;--s2:#E0B183;--s3:#D4BE7E;--s4:#8FB6D2;--s5:#9CC4A8;}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -302,14 +304,63 @@ input.shake{animation:shake .38s ease}
 .ro-head span{color:var(--muted);font-size:12.5px}
 .ro-foot{text-align:center;color:var(--muted);font-size:12px;margin:22px 0 0}
 
+/* ---------- พื้นหลัง aura ---------- */
+.aura{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.aura i{position:absolute;inset:0;display:block;transform:translateZ(0);will-change:transform;pointer-events:none}
+.aura .a1{background:radial-gradient(circle at 22% 28%,var(--a1) 0%,transparent 50%);mix-blend-mode:normal;filter:blur(200px)}
+.aura .a2{background:radial-gradient(circle at 78% 32%,var(--a2) 0%,transparent 45%);mix-blend-mode:normal;filter:blur(175px)}
+.aura .a3{background:radial-gradient(circle at 50% 78%,var(--a3) 0%,transparent 55%);mix-blend-mode:multiply;filter:blur(200px)}
+.aura .a4{background:radial-gradient(circle at 85% 70%,var(--a4) 0%,transparent 35%);mix-blend-mode:multiply;filter:blur(150px)}
+@media(min-width:700px){
+  .aura .a1{filter:blur(260px)} .aura .a2{filter:blur(252px)}
+  .aura .a3{filter:blur(260px)} .aura .a4{filter:blur(216px)}
+}
+[data-theme="night"] .aura{opacity:.5}
+
+/* ---------- แถวปุ่มในการ์ดบันทึก ---------- */
+.log .acts2{display:flex;gap:8px;margin-top:12px}
+.log .acts2 .share{margin-top:0}
+.log .edit{flex:none;display:grid;place-items:center;width:46px;border:1px solid var(--line);border-radius:14px;color:var(--muted)}
+.log .edit svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none}
+
+/* ---------- สีประจำโปรเจกต์ ---------- */
+.pcol{padding:4px 16px 16px}
+.pcol .nm{font-size:13.5px;margin:10px 0 8px}
+.pcol .sws{display:flex;gap:9px;flex-wrap:wrap}
+.pcol button{width:32px;height:32px;border-radius:11px;border:2px solid transparent}
+.pcol button[aria-pressed="true"]{border-color:var(--ink)}
+
+/* ---------- ตัวแก้หัวข้อย่อย ---------- */
+.dets{display:flex;flex-direction:column;gap:8px}
+.det{display:flex;gap:8px;align-items:flex-start}
+.det textarea{flex:1;min-height:64px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:14px;resize:vertical}
+.det .x{flex:none;width:36px;height:36px;border-radius:11px;background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn);display:grid;place-items:center}
+.addd{width:100%;margin-top:9px;border:1px dashed var(--line);border-radius:13px;padding:10px 0;font-size:13.5px;color:var(--blue-deep)}
+.two{display:flex;gap:10px}
+.two>div{flex:1}
+.course-toggle{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;background:var(--bg);border:1px solid var(--line);border-radius:14px}
+[data-theme="night"] .course-toggle{background:var(--tint)}
+.course-toggle .copy{flex:1;text-align:left}
+.course-toggle .copy b{display:block;font-size:14px;font-weight:500}
+.course-toggle .copy span{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+.course-fields{margin-top:12px}
+.course-fields.hide{display:none}
+.task-code{font-size:11.5px;font-weight:600;color:var(--blue-deep);background:var(--tint);border-radius:999px;padding:2px 9px}
+.task-dates{display:flex;gap:6px;flex-wrap:wrap}
+.addlog{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-bottom:10px;background:var(--blue-deep);color:#fff;border-radius:14px;padding:12px 0;font-size:14px;font-weight:500}
+[data-theme="night"] .addlog{color:#1B232A}
+.addlog svg{width:17px;height:17px;stroke:currentColor;stroke-width:2;fill:none}
+.local-note{margin:-2px 2px 14px;color:var(--muted);font-size:11.5px;text-align:center}
+
 </style>
 </head>
 <body>
+<div class="aura" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i></div>
 <div class="app">
 
   <section class="screen on" id="s-overview">
     <div class="top">
-      <div><h1>งานทั้งหมด</h1><p id="ov-sub">กำลังโหลด…</p></div>
+      <div><h1>งานทั่วไป</h1><p id="ov-sub">กำลังโหลด…</p></div>
       <span class="chip-count" id="ov-count"></span>
       <img class="mascot hide" id="mascot" alt="">
     </div>
@@ -317,19 +368,19 @@ input.shake{animation:shake .38s ease}
   </section>
 
   <section class="screen" id="s-summary">
-    <div class="top"><div><h1>สรุป</h1><p>ภาพรวมความคืบหน้าทั้งหมด</p></div><img class="mascot" data-cat="butterfly" alt=""></div>
+    <div class="top"><div><h1>สรุปรายวิชา</h1><p>เฉพาะงานที่เปิดเป็นงานรายวิชา</p></div><img class="mascot" data-cat="butterfly" alt=""></div>
     <div class="hero">
       <div class="ring">
         <svg width="104" height="104"><circle cx="52" cy="52" r="45" stroke="var(--tint)" stroke-width="9" fill="none"/><circle id="ring" cx="52" cy="52" r="45" stroke="var(--blue)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="283" style="transition:stroke-dashoffset .6s cubic-bezier(.22,1.3,.45,1)"/></svg>
         <div class="val" id="ring-val">0%</div>
       </div>
-      <div><h2>ความคืบหน้าเฉลี่ย</h2><p id="hero-sub">เฉลี่ยจากงานทุกชิ้นในลิสต์</p></div>
+      <div><h2>ความคืบหน้าวิชาเรียน</h2><p id="hero-sub">เฉลี่ยจากงานรายวิชา</p></div>
     </div>
     <div class="duo">
-      <div class="stat"><b id="st-left">0</b><span>งานที่ค้างอยู่</span></div>
-      <div class="stat"><b id="st-done">0</b><span>งานที่เสร็จแล้ว</span></div>
+      <div class="stat"><b id="st-left">0</b><span>งานเรียนที่ค้าง</span></div>
+      <div class="stat"><b id="st-done">0</b><span>งานเรียนที่เสร็จ</span></div>
     </div>
-    <p class="sec">งานที่ยังค้าง</p>
+    <p class="sec">งานรายวิชาที่ยังค้าง</p>
     <div class="list" id="pending"></div>
   </section>
 
@@ -338,6 +389,15 @@ input.shake{animation:shake .38s ease}
 
     <div class="group">
       <button class="row" id="sound-row"><span class="lbl">เสียงตอนกด</span><span class="sw-toggle" id="sound-sw"><i></i></span></button>
+    </div>
+
+    <div class="group">
+      <div class="row"><span class="lbl">สีประจำโปรเจกต์</span><span class="sub">ใช้กับป้ายและก้อนวันที่</span></div>
+      <div class="pcol" id="pcol"></div>
+    </div>
+
+    <div class="group">
+      <button class="row" id="copy-logs"><span class="lbl">คัดลอกข้อมูลบันทึกเป็นโค้ด</span><span class="sub">เอาไปวางทับในไฟล์</span></button>
     </div>
 
     <div class="group">
@@ -364,7 +424,7 @@ input.shake{animation:shake .38s ease}
 
   <section class="screen" id="s-log">
     <div class="top">
-      <div><h1>บันทึกงาน</h1><p id="log-sub">กำลังโหลด…</p></div>
+      <div><h1>งานบริษัท</h1><p id="log-sub">กำลังโหลด…</p></div>
       <img class="mascot" data-cat="write" alt="">
     </div>
     <div class="tabs" id="proj-tabs"></div>
@@ -376,7 +436,9 @@ input.shake{animation:shake .38s ease}
       <select id="log-month" aria-label="เลือกช่วงเวลา"></select>
       <button class="sortb" id="log-sort" data-order="desc">ใหม่ → เก่า</button>
     </div>
+    <button class="addlog" id="log-add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>เพิ่มบันทึกงานวันนี้</button>
     <button class="sharep" id="log-share"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg>แชร์บันทึกของ<b id="share-what">ทุกโปรเจกต์</b></button>
+    <p class="local-note">บันทึกที่เพิ่มจากหน้านี้จะเก็บไว้ในเครื่องนี้</p>
     <div class="list" id="logs"></div>
   </section>
 
@@ -387,8 +449,8 @@ input.shake{animation:shake .38s ease}
   </section>
 
   <nav class="nav">
-    <button data-go="overview" class="on"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="6" rx="2"/><rect x="3.5" y="13.5" width="17" height="6" rx="2"/></svg>ภาพรวม</button>
-    <button data-go="log"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11a1.5 1.5 0 011.5 1.5v15l-3-2-2 2-2-2-2 2-3-2V5a1.5 1.5 0 011.5-1.5z"/><path d="M9 8h6M9 12h4"/></svg>บันทึก</button>
+    <button data-go="overview" class="on"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="6" rx="2"/><rect x="3.5" y="13.5" width="17" height="6" rx="2"/></svg>งานทั่วไป</button>
+    <button data-go="log"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11a1.5 1.5 0 011.5 1.5v15l-3-2-2 2-2-2-2 2-3-2V5a1.5 1.5 0 011.5-1.5z"/><path d="M9 8h6M9 12h4"/></svg>งานบริษัท</button>
     <button data-go="summary"><svg viewBox="0 0 24 24"><path d="M5 19V11M12 19V5M19 19v-5"/></svg>สรุป</button>
     <button data-go="menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>เมนู</button>
   </nav>
@@ -401,12 +463,36 @@ input.shake{animation:shake .38s ease}
   <div class="grip"></div>
   <div class="sh-head"><h3 id="sh-title">งานใหม่</h3><img class="mascot sm" data-cat="write" alt=""></div>
   <div class="f"><label for="f-title">ชื่องาน</label><input type="text" id="f-title" placeholder="เช่น ส่งรายงานวิชาเน็ตเวิร์ก" maxlength="80"></div>
+  <div class="f">
+    <button class="course-toggle" id="course-toggle" type="button">
+      <span class="copy"><b>งานรายวิชา</b><span>เปิดเพื่อใส่รหัสวิชาและนำไปคำนวณในหน้าสรุป</span></span>
+      <span class="sw-toggle" id="course-sw"><i></i></span>
+    </button>
+    <div class="course-fields" id="course-fields"><label for="f-course">รหัสรายวิชา</label><input type="text" id="f-course" placeholder="เช่น 01418231" maxlength="24"></div>
+  </div>
   <div class="f"><label for="f-note">รายละเอียด</label><textarea id="f-note" placeholder="โน้ตย่อ ๆ ว่าต้องทำอะไรบ้าง" maxlength="600"></textarea></div>
-  <div class="f"><label for="f-due">วันครบกำหนด</label><input type="date" id="f-due"></div>
+  <div class="f"><label>ช่วงเวลาทำงาน</label><div class="two"><div><label for="f-start">เริ่มทำ</label><input type="date" id="f-start"></div><div><label for="f-due">วันครบกำหนด</label><input type="date" id="f-due"></div></div></div>
   <div class="acts">
     <button class="btn ghost" id="sh-close" aria-label="ปิด">✕</button>
     <button class="btn del" id="sh-del" aria-label="ลบงาน">🗑</button>
     <button class="btn primary" id="sh-save">บันทึกงาน</button>
+  </div>
+</div>
+<div class="sheet" id="lsheet" role="dialog" aria-modal="true">
+  <div class="grip"></div>
+  <div class="sh-head"><h3 id="l-sheet-title">แก้ไขบันทึก</h3><img class="mascot sm" data-cat="write" alt=""></div>
+  <div class="f"><label for="l-title">หัวข้อ</label><input type="text" id="l-title" maxlength="160"></div>
+  <div class="f"><label for="l-summary">สรุป</label><textarea id="l-summary" maxlength="1200"></textarea></div>
+  <div class="f"><label for="l-project">โปรเจกต์</label><select id="l-project"></select></div>
+  <div class="f"><label for="l-cat">หมวด (คั่นด้วย ·)</label><input type="text" id="l-cat" maxlength="160"></div>
+  <div class="f"><label for="l-date">วันที่</label><input type="date" id="l-date"></div>
+  <div class="f"><label>เวลาเริ่ม – เวลาเลิก</label><div class="two"><div><input type="time" id="l-start"></div><div><input type="time" id="l-end"></div></div></div>
+  <div class="f"><label>หัวข้อย่อย</label><div class="dets" id="l-details"></div>
+    <button class="addd" id="l-add">+ เพิ่มหัวข้อย่อย</button></div>
+  <div class="acts">
+    <button class="btn ghost" id="l-close" aria-label="ปิด">✕</button>
+    <button class="btn del" id="l-reset" aria-label="คืนค่าเดิม">↺</button>
+    <button class="btn primary" id="l-save">บันทึก</button>
   </div>
 </div>
 <div class="toast" id="toast"><img id="toast-cat" alt=""><span id="toast-msg"></span></div>
@@ -431,28 +517,26 @@ const LOGS=[
     date: "2026-09-09",
     project: "cat-hotel",
     category: "หน้าโหลด · PDPA · น้องแมวในหน้าจอง · ความเร็ว",
-    title: "รื้อหน้าโหลดกับหน้านโยบายความเป็นส่วนตัวใหม่ ใส่น้องแมวลงกล่องเลือกแบบพัก และไล่หาต้นเหตุจอขาวตอนเปิดในไลน์",
-    summary: "วันนี้เป็นงานหน้าตาเป็นหลัก เริ่มจากเปลี่ยนหัวใจในหน้าโหลดเป็นรอยเท้าแมว แล้วรื้อหน้าโหลดใหม่ทั้งหน้าให้เหลือแค่ตัวน้องกับรอยเท้าที่ไล่สว่างเป็นจุดโหลด ต่อด้วยเอาน้องแมวประจำแบบพักลงกล่องพักค้างคืนกับฝากรายชั่วโมงที่เดิมมีแต่ที่ว่าง กดสลับแล้วน้องโผล่ขึ้นมุดลงได้ ส่วนนี้แก้หลายรอบกว่าจะได้ขนาดกับตำแหน่งตามที่ต้องการ สุดท้ายเลยเลิกกะเอาแล้วคำนวณจากขนาดจริงของไฟล์รูปแทน กลางวันเขียนประกาศความเป็นส่วนตัวใหม่ทั้งฉบับตามแบบ PDPA พร้อมช่องยินยอมแยกที่เก็บลงฐานข้อมูลจริง แล้วจัดหน้าใหม่ให้ลูกค้าใหม่ต้องรับทราบก่อนถึงจะเข้าเว็บได้ ปิดท้ายด้วยการวัดความเร็วเว็บจริงจนเจอว่าที่จอขาวค้างตอนเปิดในไลน์เพราะเซิร์ฟเวอร์ต้องรอ Supabase ตอบเรื่องสีธีมก่อนทุกครั้งที่มีคนเปิดหน้า",
+    title: "รื้อหน้าโหลด ใส่น้องแมวในกล่องเลือกแบบพัก และเขียนนโยบาย PDPA ใหม่",
+    summary: "เช้าถึงบ่ายเป็นงานหน้าตา รื้อหน้าโหลดใหม่ให้เหลือแค่น้องแมวกับรอยเท้าที่ไล่สว่าง แล้วใส่น้องแมวประจำแบบพักลงกล่องพักค้างคืนกับฝากรายชั่วโมง กดสลับแล้วโผล่ขึ้นมุดลงได้ กลางวันเขียนประกาศความเป็นส่วนตัวใหม่ทั้งฉบับตามแบบ PDPA พร้อมช่องยินยอมแยกที่เก็บลงฐานข้อมูลจริง ปิดท้ายด้วยการวัดความเร็วเว็บ จนเจอว่าจอขาวตอนเปิดในไลน์เกิดจากเซิร์ฟเวอร์ต้องรอ Supabase ตอบเรื่องสีธีมก่อนทุกครั้งที่มีคนเปิดหน้า",
     details: [
-      "เปลี่ยนหัวใจที่ลอยตามหลังน้องในหน้าโหลดเป็นรอยเท้าแมว วาดเป็น SVG เองเพราะอิโมจิของแต่ละเครื่องหน้าตาไม่เหมือนกันและคุมสีตามธีมไม่ได้",
-      "รื้อหน้าโหลดใหม่ เหลือแค่ตัวน้องกับรอยเท้า 3 ใบใต้ตัวที่ไล่สว่างทีละใบเป็นจุดโหลด ตัดข้อความออกทั้งหมด และลดขนาดน้องจาก 270px เหลือ 190px",
-      "ใส่น้องแมวประจำแบบพักลงกล่องพักค้างคืนกับฝากรายชั่วโมงที่เดิมเหลือที่ว่างอยู่ กดสลับแล้วตัวที่เลือกโผล่ขึ้นจากก้นกล่อง อีกตัวมุดลงไป และขยับเบา ๆ ตลอดตอนที่ถูกเลือก",
-      "สลับด้านรูปน้องพักค้างคืนให้หันหน้าเข้าหาตัวหนังสือ ส่วนน้องฝากรายชั่วโมงเอียงหน้าขึ้น 20 องศา ให้ขอบล่างของกล่องตัดพอดีที่ขา ไม่เห็นเท้า",
-      "แบ่งกรอบครอบน้องเป็น 3 ชั้น ชั้นนอกตัดภาพ ชั้นกลางทำจังหวะเด้ง ชั้นในขยับ ต้องแยกกันเพราะถ้าใส่ transform ทั้ง transition และ animation ที่ตัวเดียวกันมันจะตีกัน",
-      "เลิกกะตำแหน่งด้วยตา หันมาคำนวณจากขนาดจริงของตัวน้องในไฟล์รูปเทียบกับความสูงกล่อง หัวน้องเลยโผล่พ้นขอบบนได้โดยไม่โดนตัดทั้งตอนเด้งขึ้นและตอนลอยขึ้นลง",
-      "แก้บั๊กปฏิทินที่หัวข้อทับกล่องปฏิทิน ต้นเหตุคือ .form-section ใส่ fill-mode both ทำให้ transform ค้างอยู่ กลายเป็น stacking context แล้ว position:fixed ของกล่องปฏิทินไปยึดกับกล่องฟอร์มแทนหน้าจอ แก้โดยย้ายไป render ที่ body",
-      "ทำปุ่มกดแล้วเด้ง กดค้างยุบเร็ว 80 มิลลิวินาที ปล่อยนิ้วแล้วเด้งกลับ ปุ่มกลมเล็กอย่างเพิ่ม/ลดจำนวนแมวยุบแรงกว่าปุ่มใหญ่",
-      "เขียนประกาศความเป็นส่วนตัวใหม่ทั้งฉบับตามแบบ PDPA ตัดปุ่มไว้ภายหลังออก เหลือช่องรับทราบ 1 ช่องที่บังคับ",
-      "แยกช่องยินยอมออกมาอีก 2 ช่อง รับข่าวสารทาง LINE/SMS กับให้ใช้ภาพน้องประชาสัมพันธ์ ไม่ติ๊กล่วงหน้าและไม่ติ๊กก็จองได้ตามปกติ",
-      "เพิ่ม migration 014 เก็บเวลาที่ลูกค้ายินยอม 2 คอลัมน์ในตารางลูกค้า เขียนแยกเป็นคำขอของตัวเองแบบ best-effort ถ้ายังไม่ได้รัน migration ลูกค้าก็ยังจองได้ไม่สะดุด",
-      "จัดหน้านโยบายใหม่ หัวเป็นแถบสีมีน้องแมวอยู่กลางแล้วตามด้วยหัวข้อ ลูกค้าใหม่ต้องรับทราบก่อนถึงจะเข้าเว็บได้ ปิดกล่องไม่ได้แม้กดปุ่มย้อนกลับของเบราว์เซอร์",
-      "ขยับเลขเวอร์ชันคีย์ที่เก็บการรับทราบจาก v1 เป็น v2 เพราะเนื้อหาประกาศเปลี่ยนใหม่หมด คนที่เคยกดรับทราบฉบับเก่าจะได้เห็นฉบับใหม่อีกครั้ง",
-      "ตัดรูปน้องแมวหน้านโยบายออกจากพื้นหลังลายหมากรุกในภาพหน้าจอ แยกด้วยค่าความอิ่มสีเพราะขนแมวเป็นครีมส่วนลายเป็นเทาล้วน แล้วเซฟเป็น WebP โปร่งใส",
-      "จัดข้อความภาษาอังกฤษที่ยาวกว่าไทยเกือบเท่าตัวจนล้นไปทับน้องแมว ย่อคำ 7 จุด และทำ hook [data-locale=en] ให้ปรับได้เฉพาะภาษาอังกฤษ ไม่กระทบตัวไทยที่ลงตัวอยู่แล้ว",
-      "วัด TTFB ของเว็บจริงได้เฉลี่ยเกือบ 0.9 วินาที เจอว่าทุกครั้งที่มีคนเปิดหน้าเว็บ เซิร์ฟเวอร์ต้องยิงไปถามสีธีมจาก Supabase ก่อนถึงจะส่ง HTML ได้ ให้จำค่าไว้ 1 นาที คนที่เปิดหน้าถัดไปจะได้ไม่ต้องรอเน็ตอีกรอบ",
-      "deploy พังไปหนึ่งรอบเพราะมีปีกกาปิดเกินมา 1 ตัวใน globals.css จากสคริปต์แทนที่ข้อความ ตอนนี้เลยตรวจ CSS ด้วย parser ทุกครั้งก่อนส่งไฟล์กลับ",
+      "เปลี่ยนหัวใจที่ลอยตามน้องในหน้าโหลดเป็นรอยเท้าแมว วาดเป็น SVG เองเพื่อคุมสีตามธีมได้",
+      "รื้อหน้าโหลดใหม่ เหลือน้องกับรอยเท้า 3 ใบที่ไล่สว่างเป็นจุดโหลด ตัดข้อความออก ลดขนาดน้องจาก 270 เหลือ 190px",
+      "ใส่น้องแมวประจำแบบพักลงกล่องพักค้างคืนกับฝากรายชั่วโมง กดสลับแล้วตัวที่เลือกโผล่ขึ้น อีกตัวมุดลง",
+      "จัดท่าน้อง สลับด้านให้หันเข้าหาตัวหนังสือ และเอียงหน้าขึ้น 20 องศาให้ขอบกล่องตัดพอดีที่ขา",
+      "แยกกรอบครอบน้องเป็น 3 ชั้น ตัดภาพ/เด้ง/ขยับ เพราะ transition กับ animation ที่ตัวเดียวกันมันตีกัน",
+      "เลิกกะตำแหน่งด้วยตา เปลี่ยนมาคำนวณจากขนาดจริงในไฟล์รูป หัวน้องเลยไม่โดนตัดตอนเด้งขึ้นและลอยขึ้นลง",
+      "แก้บั๊กหัวข้อทับกล่องปฏิทิน ต้นเหตุคือ fill-mode both ทำให้ transform ค้างจนเกิด stacking context แก้โดยย้ายไป render ที่ body",
+      "ทำปุ่มกดแล้วเด้ง กดค้างยุบ 80 มิลลิวินาที ปล่อยแล้วเด้งกลับ ปุ่มกลมเล็กยุบแรงกว่าปุ่มใหญ่",
+      "เขียนประกาศความเป็นส่วนตัวใหม่ทั้งฉบับตามแบบ PDPA เหลือช่องรับทราบบังคับ 1 ช่อง และช่องยินยอมไม่บังคับอีก 2 ช่อง",
+      "เพิ่ม migration 014 เก็บเวลาที่ลูกค้ายินยอมแบบ best-effort ยังไม่ได้รันก็จองได้ตามปกติ",
+      "จัดหน้านโยบายใหม่ ลูกค้าใหม่ต้องรับทราบก่อนเข้าเว็บ ปิดไม่ได้แม้กดย้อนกลับ และขยับคีย์รับทราบเป็น v2",
+      "ตัดรูปน้องหน้านโยบายออกจากพื้นหลังลายหมากรุกด้วยค่าความอิ่มสี แล้วเซฟเป็น WebP โปร่งใส",
+      "ย่อข้อความอังกฤษ 7 จุดที่ยาวจนล้นไปทับน้อง ทำ hook [data-locale=en] ไม่ให้กระทบตัวไทย",
+      "เจอ TTFB เฉลี่ยเกือบ 0.9 วินาที เพราะทุกครั้งที่เปิดหน้า เซิร์ฟเวอร์ต้องถามสีธีมจาก Supabase ก่อน แก้ด้วยการจำค่าไว้ 1 นาที",
+      "deploy พังหนึ่งรอบเพราะปีกกาปิดเกินใน globals.css ตอนนี้ตรวจ CSS ด้วย parser ทุกครั้งก่อนส่งไฟล์",
     ],
-    time: "9 ก.ย. 12:32 น. – 9 ก.ย. 16:07 น. · 3 ชม. 35 นาที",
+    time: "9 ก.ย. 09:50 น. – 9 ก.ย. 18:12 น. · 8 ชม. 22 นาที",
   },
   {
     date: "2026-09-02",
@@ -761,7 +845,7 @@ const LOGS=[
     time: "18:21–23:35 น.",
   },
 ];
-let state={tasks:[],theme:'dusty',sound:true,profile:{name:'',cat:'wave'}};
+let state={tasks:[],theme:'dusty',sound:true,profile:{name:'',cat:'wave'},projColors:{},logEdits:{},logAdds:[]};
 let editing=null, saveTimer=null, cheerTimer=null, cheering=false;
 document.querySelectorAll('[data-cat]').forEach(el=>{el.src=CAT[el.dataset.cat]||CAT.wave;});
 document.getElementById('splash-cat').src=CAT.run;
@@ -843,6 +927,13 @@ const store={
 
 /* ---------- บันทึกงาน (อ่านอย่างเดียว) ---------- */
 const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const PALETTE=['#7CA3BE','#A698C9','#84B29A','#C79A88','#C2AE72','#8FB59B','#B79BC4','#8AA6B8'];
+const DEFCOL={};Object.keys(PROJECTS).forEach((k,i)=>{DEFCOL[k]=PALETTE[i%PALETTE.length];});
+const pcol=id=>(state.projColors||{})[id]||DEFCOL[id]||'#7CA3BE';
+const effLogs=()=>LOGS.concat(state.logAdds||[]).map(e=>{
+  const key=e.key||e.date;
+  return Object.assign({key},e,(state.logEdits||{})[key]||{});
+});
 let logState={proj:'all',q:'',month:'all',order:'desc'};
 let openLog=null;
 
@@ -860,43 +951,58 @@ function logMatch(e){
 }
 function logHTML(e,o){
   o=o||{};
-  const caret=o.caret!==false, share=o.share!==false, full=o.open||openLog===e.date;
-  const w=logDay(e), pj=PROJECTS[e.project];
-  const cats=e.category.split('·').map(c=>`<span class="pill">${esc(c.trim())}</span>`).join('');
-  return `<article class="log ${full?'open':''}" data-log="${e.date}">
-    <button class="head" data-toggle="${e.date}">
-      <span class="when"><b>${esc(w.d)}</b><span>${esc(w.m)}</span></span>
+  const caret=o.caret!==false, share=o.share!==false, full=o.open||openLog===(e.key||e.date);
+  const w=logDay(e), pj=PROJECTS[e.project], c=pcol(e.project), id=e.key||e.date;
+  const cats=String(e.category||'').split('·').map(c2=>c2.trim()).filter(Boolean).map(c2=>`<span class="pill">${esc(c2)}</span>`).join('');
+  return `<article class="log ${full?'open':''}" data-log="${id}">
+    <button class="head" data-toggle="${id}">
+      <span class="when" style="background:${c}22;color:${c}"><b>${esc(w.d)}</b><span>${esc(w.m)}</span></span>
       <span class="txt">
         <h3>${esc(e.title)}</h3>
         <p>${esc(e.summary)}</p>
-        <span class="meta"><span class="pill">${esc(pj?pj.name:e.project)}</span>${cats}<span class="pill time">${esc(e.time)}</span></span>
+        <span class="meta"><span class="pill" style="background:${c}22;color:${c}">${esc(pj?pj.name:e.project)}</span>${cats}${e.time?`<span class="pill time">${esc(e.time)}</span>`:''}</span>
       </span>
       ${caret?'<svg class="caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>':''}
     </button>
     <div class="more">
-      <ul>${e.details.map(d=>`<li>${esc(d)}</li>`).join('')}</ul>
-      ${share?`<button class="share" data-share="${e.date}"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg>แชร์ลิงก์บันทึกนี้</button>`:''}
+      <ul>${(e.details||[]).map(d=>`<li>${esc(d)}</li>`).join('')}</ul>
+      ${share?`<div class="acts2">
+        <button class="share" data-share="${id}"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg>แชร์ลิงก์บันทึกนี้</button>
+        <button class="edit" data-edit="${id}" aria-label="แก้ไขบันทึก"><svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></button>
+      </div>`:''}
     </div>
   </article>`;
 }
 function renderLogs(){
-  const rows=LOGS.filter(logMatch).sort((a,b)=>logState.order==='desc'?b.date.localeCompare(a.date):a.date.localeCompare(b.date));
+  const all=effLogs();
+  const rows=all.filter(logMatch).sort((a,b)=>logState.order==='desc'?b.date.localeCompare(a.date):a.date.localeCompare(b.date));
   $('#logs').innerHTML=rows.length?rows.map(e=>logHTML(e)).join('')
     :`<div class="empty"><img data-cat="sad" alt=""><p>ไม่พบบันทึกที่ตรงกับที่ค้นหา</p></div>`;
   $('#logs').querySelectorAll('[data-cat]').forEach(el=>{el.src=CAT[el.dataset.cat];});
-  $('#log-sub').textContent=`พบ ${rows.length} บันทึก จากทั้งหมด ${LOGS.length}`;
+  $('#log-sub').textContent=`พบ ${rows.length} บันทึก จากทั้งหมด ${all.length}`;
   $('#share-what').textContent=logState.proj==='all'?'ทุกโปรเจกต์':PROJECTS[logState.proj].name;
   $('#proj-tabs').innerHTML=[{id:'all',name:'ทุกโปรเจกต์'}].concat(Object.keys(PROJECTS).map(k=>({id:k,name:PROJECTS[k].name})))
-    .map(p=>`<button class="tab ${p.id===logState.proj?'on':''}" data-proj="${p.id}">${esc(p.name)}<i>${p.id==='all'?LOGS.length:LOGS.filter(x=>x.project===p.id).length}</i></button>`).join('');
+    .map(p=>`<button class="tab ${p.id===logState.proj?'on':''}" data-proj="${p.id}">${esc(p.name)}<i>${p.id==='all'?all.length:all.filter(x=>x.project===p.id).length}</i></button>`).join('');
+  buildMonths(all);
 }
-function buildMonths(){
-  const ms=[...new Set(LOGS.map(e=>e.date.slice(0,7)))].sort().reverse();
+function buildMonths(all){
+  const cur=logState.month;
+  const ms=[...new Set(all.map(e=>e.date.slice(0,7)))].sort().reverse();
   $('#log-month').innerHTML=`<option value="all">ทุกเดือน</option>`+
-    ms.map(m=>`<option value="${m}">${TH_M[+m.slice(5)-1]} ${+m.slice(0,4)+543-2000}</option>`).join('');
+    ms.map(m=>`<option value="${m}" ${m===cur?'selected':''}>${TH_M[+m.slice(5)-1]} ${+m.slice(0,4)+543-2000}</option>`).join('');
 }
 document.body.addEventListener('click',e=>{
   const tab=e.target.closest('[data-proj]');
   if(tab){buzz(8,'tap');play(tab,'pop',400);logState.proj=tab.dataset.proj;renderLogs();return;}
+  const ed=e.target.closest('[data-edit]');
+  if(ed){buzz(10,'tap');openLSheet(ed.dataset.edit);return;}
+  const swc=e.target.closest('[data-pcol]');
+  if(swc){
+    buzz(8,'pop');
+    state.projColors=state.projColors||{};
+    state.projColors[swc.dataset.pj]=swc.dataset.pcol;
+    save();renderPCol();renderLogs();return;
+  }
   const tg=e.target.closest('[data-toggle]');
   if(tg){
     const d=tg.dataset.toggle;
@@ -909,8 +1015,10 @@ document.body.addEventListener('click',e=>{
   const sh=e.target.closest('[data-share]');
   if(sh){
     buzz(12,'pop');
-    const url=location.origin+location.pathname+'#r='+sh.dataset.share;
-    const item=LOGS.find(x=>x.date===sh.dataset.share);
+    const localOnly=(state.logAdds||[]).some(x=>(x.key||x.date)===sh.dataset.share)||!!(state.logEdits||{})[sh.dataset.share];
+    if(localOnly){toast('รายการนี้ยังอยู่ในเครื่อง ต้องอัปเดตเว็บหรือเชื่อมฐานข้อมูลก่อนแชร์',true);return;}
+    const url=location.origin+location.pathname+'#r='+encodeURIComponent(sh.dataset.share);
+    const item=effLogs().find(x=>x.key===sh.dataset.share);
     shareLink(url,'MENOTE · '+item.title);
   }
 });
@@ -930,6 +1038,114 @@ $('#log-sort').onclick=()=>{
   $('#log-sort').textContent=logState.order==='desc'?'ใหม่ → เก่า':'เก่า → ใหม่';
   buzz(8,'tap');renderLogs();
 };
+function renderPCol(){
+  $('#pcol').innerHTML=Object.keys(PROJECTS).map(k=>`<div class="nm">${esc(PROJECTS[k].name)}</div>
+    <div class="sws">${PALETTE.map(c=>`<button data-pcol="${c}" data-pj="${k}" aria-pressed="${pcol(k)===c}" style="background:${c}"></button>`).join('')}</div>`).join('');
+}
+$('#copy-logs').onclick=()=>{
+  buzz(10,'save');
+  const code='const LOGS='+JSON.stringify(effLogs().map(e=>{const o=Object.assign({},e);delete o.key;return o;}),null,2)+';';
+  navigator.clipboard.writeText(code).then(()=>toast('คัดลอกโค้ดแล้ว')).catch(()=>toast('คัดลอกไม่สำเร็จ',true));
+};
+
+/* ---------- ชีตแก้บันทึก ---------- */
+let ledit=null, lnew=false;
+const pad2=n=>String(n).padStart(2,'0');
+const localISO=(d=new Date())=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+function parseTimes(t){
+  const m=String(t||'').match(/(\d{2}:\d{2})/g);
+  return m&&m.length>=2?[m[0],m[1]]:['',''];
+}
+function timeStr(iso,st,en){
+  if(!st||!en)return '';
+  const d=new Date(iso+'T00:00:00');
+  let m1=+st.slice(0,2)*60+ +st.slice(3,5), m2=+en.slice(0,2)*60+ +en.slice(3,5);
+  const cross=m2<=m1; if(cross)m2+=1440;
+  const d2=new Date(d); if(cross)d2.setDate(d2.getDate()+1);
+  const dur=m2-m1, h=Math.floor(dur/60), mi=dur%60;
+  const lbl=x=>x.getDate()+' '+TH_M[x.getMonth()];
+  return `${lbl(d)} ${st} น. – ${lbl(d2)} ${en} น. · ${h} ชม.${mi?' '+mi+' นาที':''}`;
+}
+function detRow(v){
+  return `<div class="det"><textarea>${esc(v)}</textarea><button class="x" data-drop>✕</button></div>`;
+}
+function openLSheet(key){
+  const e=key?effLogs().find(x=>x.key===key):null;
+  if(key&&!e)return;
+  ledit=key||null; lnew=!key;
+  $('#l-sheet-title').textContent=lnew?'เพิ่มบันทึกงานบริษัท':'แก้ไขบันทึก';
+  $('#l-title').value=e?e.title:'';
+  $('#l-summary').value=e?e.summary||'':'';
+  $('#l-cat').value=e?e.category||'':'';
+  $('#l-date').value=e?e.date:localISO();
+  const picked=e?e.project:(logState.proj!=='all'?logState.proj:Object.keys(PROJECTS)[0]);
+  $('#l-project').innerHTML=Object.keys(PROJECTS).map(k=>`<option value="${k}" ${k===picked?'selected':''}>${esc(PROJECTS[k].name)}</option>`).join('');
+  const t=parseTimes(e?e.time:''); $('#l-start').value=t[0]; $('#l-end').value=t[1];
+  $('#l-details').innerHTML=e?(e.details||[]).map(detRow).join(''):detRow('');
+  $('#l-reset').style.display=lnew?'none':'block';
+  if(!lnew){
+    const added=(state.logAdds||[]).some(x=>(x.key||x.date)===key);
+    $('#l-reset').textContent=added?'🗑':'↺';
+    $('#l-reset').setAttribute('aria-label',added?'ลบบันทึก':'คืนค่าเดิม');
+  }
+  $('#scrim').classList.add('on'); $('#lsheet').classList.add('on');
+  if(lnew)setTimeout(()=>$('#l-title').focus(),300);
+}
+function closeLSheet(){$('#scrim').classList.remove('on');$('#lsheet').classList.remove('on');ledit=null;lnew=false;}
+$('#log-add').onclick=()=>{
+  buzz(12,'pop');
+  const current=effLogs().find(x=>x.date===localISO());
+  if(current){openLSheet(current.key);toast('วันนี้มีบันทึกแล้ว เปิดให้แก้ไขต่อ');}
+  else openLSheet(null);
+};
+$('#l-close').onclick=()=>{buzz(8,'tap');closeLSheet();};
+$('#l-add').onclick=()=>{
+  buzz(8,'tap');
+  $('#l-details').insertAdjacentHTML('beforeend',detRow(''));
+  const rows=$('#l-details').querySelectorAll('textarea');
+  rows[rows.length-1].focus();
+};
+$('#l-details').addEventListener('click',e=>{
+  const x=e.target.closest('[data-drop]');
+  if(x){buzz(10,'del');x.closest('.det').remove();}
+});
+$('#l-reset').onclick=()=>{
+  if(!ledit)return;
+  buzz(12,'del');
+  const added=(state.logAdds||[]).some(x=>(x.key||x.date)===ledit);
+  if(added){
+    state.logAdds=state.logAdds.filter(x=>(x.key||x.date)!==ledit);
+    if(state.logEdits)delete state.logEdits[ledit];
+    save();renderLogs();closeLSheet();toast('ลบบันทึกแล้ว');
+  }else{
+    if(state.logEdits)delete state.logEdits[ledit];
+    save();renderLogs();closeLSheet();toast('คืนค่าเดิมแล้ว');
+  }
+};
+$('#l-save').onclick=()=>{
+  const title=$('#l-title').value.trim();
+  if(!title){play($('#l-title'),'shake',400);buzz([18,50,18],'err');toast('ใส่หัวข้อก่อนนะ',true);return;}
+  const date=$('#l-date').value||(lnew?localISO():effLogs().find(x=>x.key===ledit).date);
+  const details=[...$('#l-details').querySelectorAll('textarea')].map(t=>t.value.trim()).filter(Boolean);
+  const time=timeStr(date,$('#l-start').value,$('#l-end').value);
+  const data={
+    title, summary:$('#l-summary').value.trim(), category:$('#l-cat').value.trim(),
+    project:$('#l-project').value, date, details, time
+  };
+  if(lnew){
+    if(effLogs().some(x=>x.date===date)){
+      play($('#l-date'),'shake',400);toast('วันนี้มีบันทึกอยู่แล้ว กดแก้ไขรายการเดิมได้เลย',true);return;
+    }
+    state.logAdds=state.logAdds||[];
+    state.logAdds.push(Object.assign({key:date},data));
+  }else{
+    const base=effLogs().find(x=>x.key===ledit)||{};
+    state.logEdits=state.logEdits||{};
+    state.logEdits[ledit]=Object.assign(data,{time:time||base.time||''});
+  }
+  buzz(14,'save');save();renderLogs();closeLSheet();toast('บันทึกแล้ว');
+};
+
 function openShare(sub,html){
   document.body.classList.add('ro');
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
@@ -940,9 +1156,10 @@ function openShare(sub,html){
   return true;
 }
 function shareView(){
-  const one=location.hash.match(/^#r=(\d{4}-\d{2}-\d{2})$/);
+  const one=location.hash.match(/^#r=([^&]+)$/);
   if(one){
-    const item=LOGS.find(x=>x.date===one[1]);
+    const key=decodeURIComponent(one[1]);
+    const item=effLogs().find(x=>x.key===key);
     if(!item)return false;
     return openShare(esc(PROJECTS[item.project]?PROJECTS[item.project].name:item.project)+' · บันทึกวันเดียว',
       logHTML(item,{caret:false,share:false,open:true}));
@@ -951,7 +1168,7 @@ function shareView(){
   if(grp){
     const id=grp[1];
     if(id!=='all'&&!PROJECTS[id])return false;
-    const rows=LOGS.filter(e=>id==='all'||e.project===id).sort((a,b)=>b.date.localeCompare(a.date));
+    const rows=effLogs().filter(e=>id==='all'||e.project===id).sort((a,b)=>b.date.localeCompare(a.date));
     if(!rows.length)return false;
     const name=id==='all'?'ทุกโปรเจกต์':PROJECTS[id].name;
     return openShare(esc(name)+'<span class="cnt">'+rows.length+' บันทึก</span>',
@@ -963,7 +1180,15 @@ function shareView(){
 async function load(){
   try{const r=await store.get(KEY);if(r&&r.value)state=Object.assign(state,JSON.parse(r.value));}
   catch(e){/* ยังไม่เคยบันทึก */}
-  applyTheme();renderProfile();renderSound();render();buildMonths();renderLogs();shareView();
+  state.tasks=Array.isArray(state.tasks)?state.tasks:[];
+  state.tasks.forEach(t=>{
+    if(typeof t.isCourse!=='boolean')t.isCourse=true;
+    if(typeof t.course!=='string')t.course='';
+    if(typeof t.start!=='string')t.start='';
+  });
+  state.logAdds=Array.isArray(state.logAdds)?state.logAdds:[];
+  state.logEdits=state.logEdits||{};
+  applyTheme();renderProfile();renderSound();render();renderPCol();renderLogs();shareView();
   setTimeout(()=>{const sp=$('#splash');sp.classList.add('gone');setTimeout(()=>sp.remove(),500);},700);
 }
 let warned=false;
@@ -1000,7 +1225,7 @@ function cardHTML(t){
     <button class="tick" data-tick="${t.id}" aria-label="ทำเครื่องหมายว่าเสร็จ"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></button>
     <button class="body" data-open="${t.id}">
       <p class="title">${esc(t.title)}</p>
-      <div class="meta"><span class="tag">${s.t}</span><span>${fmt(t.due)}</span>${late(t)?'<span class="late">เลยกำหนด</span>':''}<span class="pct">${t.pct}%</span></div>
+      <div class="meta">${t.isCourse!==false&&t.course?`<span class="task-code">${esc(t.course)}</span>`:''}<span class="tag">${s.t}</span><span class="task-dates">${t.start?`<span>เริ่ม ${fmt(t.start)}</span>`:''}<span>${t.due?`ครบ ${fmt(t.due)}`:'ไม่กำหนดวันครบกำหนด'}</span></span>${late(t)?'<span class="late">เลยกำหนด</span>':''}<span class="pct">${t.pct}%</span></div>
       <div class="bar"><i style="width:${t.pct}%"></i></div>
     </button>
   </div>`;
@@ -1043,18 +1268,20 @@ function render(){
   mas.classList.toggle('hide',!all.length);
   if(all.length)mas.src=cheering?CAT.cheer:CAT.nap;
 
-  const avg=all.length?Math.round(all.reduce((s,t)=>s+(t.done?100:t.pct),0)/all.length):0;
+  const courses=all.filter(t=>t.isCourse!==false), courseTs=ts.filter(t=>t.isCourse!==false);
+  const courseDone=courses.filter(t=>t.done).length, courseLeft=courses.length-courseDone;
+  const avg=courses.length?Math.round(courses.reduce((s,t)=>s+(t.done?100:t.pct),0)/courses.length):0;
   const ring=$('#ring'), rs=stage({pct:avg,done:false});
   ring.setAttribute('stroke',`var(${rs.v})`);
   $('#ring-val').style.color=`var(${rs.v})`;
   if(ring.dataset.v!==String(avg)){ring.dataset.v=avg;play(document.querySelector('.ring'),'pop',520);}
   ring.style.strokeDashoffset=283-283*avg/100;
   $('#ring-val').textContent=avg+'%';
-  $('#hero-sub').textContent=all.length?`เฉลี่ยจากงานทั้งหมด ${all.length} ชิ้น`:'ยังไม่มีข้อมูลให้คำนวณ';
-  $('#st-left').textContent=leftN; $('#st-done').textContent=doneN;
-  const pend=ts.filter(t=>!t.done);
+  $('#hero-sub').textContent=courses.length?`เฉลี่ยจากงานรายวิชา ${courses.length} ชิ้น`:'ยังไม่มีงานรายวิชาให้คำนวณ';
+  $('#st-left').textContent=courseLeft; $('#st-done').textContent=courseDone;
+  const pend=courseTs.filter(t=>!t.done);
   $('#pending').innerHTML=pend.length?pend.map(cardHTML).join(''):
-    `<div class="empty"><img src="${all.length?CAT.stretch:CAT.write}" alt=""><b>${all.length?'เคลียร์ครบแล้ว':'ยังไม่มีงานให้สรุป'}</b>${all.length?'ไม่มีงานค้างในตอนนี้':'เพิ่มงานแรกก่อนนะ'}</div>`;
+    `<div class="empty"><img src="${courses.length?CAT.stretch:CAT.write}" alt=""><b>${courses.length?'เคลียร์งานเรียนครบแล้ว':'ยังไม่มีงานรายวิชา'}</b>${courses.length?'ไม่มีงานเรียนค้างในตอนนี้':'เปิด “งานรายวิชา” ตอนเพิ่มงาน เพื่อให้แสดงที่นี่'}</div>`;
 }
 function renderProfile(){
   const p=state.profile; if(!CAT[p.cat])p.cat='wave';
@@ -1072,13 +1299,22 @@ function applyTheme(){
 }
 
 /* ---------- sheet ---------- */
+let courseOn=true;
+function setCourse(on){
+  courseOn=!!on;
+  $('#course-sw').classList.toggle('on',courseOn);
+  $('#course-fields').classList.toggle('hide',!courseOn);
+}
 function openSheet(id){
   editing=id;
   const t=id?state.tasks.find(x=>x.id===id):null;
   $('#sh-title').textContent=t?'รายละเอียดงาน':'งานใหม่';
   $('#f-title').value=t?t.title:'';
   $('#f-note').value=t?t.note:'';
+  $('#f-course').value=t?t.course||'':'';
+  $('#f-start').value=t?t.start||'':'';
   $('#f-due').value=t?t.due:'';
+  setCourse(t?t.isCourse!==false:true);
   $('#sh-del').style.display=t?'block':'none';
   $('#scrim').classList.add('on'); $('#sheet').classList.add('on');
   if(!t)setTimeout(()=>$('#f-title').focus(),300);
@@ -1087,7 +1323,9 @@ function closeSheet(){$('#scrim').classList.remove('on');$('#sheet').classList.r
 $('#sh-save').onclick=()=>{
   const title=$('#f-title').value.trim();
   if(!title){$('#f-title').focus();play($('#f-title'),'shake',400);buzz([18,50,18],'err');toast('ใส่ชื่องานก่อนนะ',true);return;}
-  const data={title,note:$('#f-note').value.trim(),due:$('#f-due').value};
+  const start=$('#f-start').value, due=$('#f-due').value;
+  if(start&&due&&start>due){play($('#f-due'),'shake',400);toast('วันครบกำหนดต้องไม่ก่อนวันเริ่มทำ',true);return;}
+  const data={title,note:$('#f-note').value.trim(),isCourse:courseOn,course:courseOn?$('#f-course').value.trim():'',start,due};
   let id=editing;
   if(editing){Object.assign(state.tasks.find(t=>t.id===editing),data);}
   else{id=Date.now().toString(36);state.tasks.push(Object.assign({id,done:false,pct:0},data));}
@@ -1102,7 +1340,8 @@ $('#sh-del').onclick=()=>{
   save();render();closeSheet();toast('ลบงานแล้ว');
 };
 $('#sh-close').onclick=()=>{buzz(8,'tap');closeSheet();};
-$('#scrim').onclick=closeSheet;
+$('#course-toggle').onclick=()=>{buzz(8,'tap');setCourse(!courseOn);};
+$('#scrim').onclick=()=>{closeSheet();closeLSheet();};
 $('#fab').onclick=e=>{buzz(12,'pop');play($('#fab'),'tap',460);openSheet(null);};
 
 /* ---------- events ---------- */
