@@ -524,6 +524,9 @@ input.shake{animation:shake .38s ease}
 .cs-deck{display:flex;flex-direction:column;gap:10px;margin:14px auto 0;max-width:860px;height:clamp(400px,calc(100dvh - 370px),980px)}
 .cs-stack{position:relative;flex:1;min-height:0;margin:0 6px;touch-action:pan-y;isolation:isolate}
 #cs-case.closed .cs-stack{filter:saturate(.8)}
+.cs-stack,.cs-stack *{touch-action:pan-y}
+.cs-stack.dragging{cursor:grabbing;user-select:none;-webkit-user-select:none}
+.cs-stack.dragging .cs-f{transition-duration:.35s,.3s,.3s}
 .cs-f{position:absolute;left:0;right:0;top:0;transform-origin:50% 0;transition:transform .6s var(--cs-move),opacity .4s ease,filter .5s ease;will-change:transform}
 .cs-f.gone,.cs-f.far{opacity:0;pointer-events:none}
 .cs-lip{position:relative;z-index:2;display:flex;align-items:center;gap:10px;width:calc(100% + 12px);margin:0 -6px;height:var(--cs-lip);
@@ -2428,28 +2431,39 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();csGo(csCur-1);csFlash();}
 });
 // ลากนิ้วบนกองเอกสาร: ลากไปทางซ้าย = ไล่ไปฉบับเก่ากว่า ลากขวา = กลับมาฉบับใหม่ (ลากยาวได้หลายฉบับ)
-const CS_STEP=52;
-let csT=null;
-$('#cs-stack').addEventListener('touchstart',e=>{
-  if(e.touches.length!==1||!csRows.length)return;
-  csT={x:e.touches[0].clientX,y:e.touches[0].clientY,from:csCur,lock:null};
-},{passive:true});
-$('#cs-stack').addEventListener('touchmove',e=>{
-  if(!csT)return;
-  const dx=e.touches[0].clientX-csT.x, dy=e.touches[0].clientY-csT.y;
+const CS_STEP=46;
+let csT=null, csJustDragged=false;
+const csStackEl=$('#cs-stack');
+// ใช้ Pointer Events: ใช้ได้ทั้งนิ้ว ปากกา และเมาส์ (ลากด้วยเมาส์บนคอมก็ได้)
+csStackEl.addEventListener('pointerdown',e=>{
+  if(!csRows.length||(e.pointerType==='mouse'&&e.button!==0))return;
+  csT={id:e.pointerId,x:e.clientX,y:e.clientY,from:csCur,lock:null};
+});
+csStackEl.addEventListener('pointermove',e=>{
+  if(!csT||e.pointerId!==csT.id)return;
+  const dx=e.clientX-csT.x, dy=e.clientY-csT.y;
   if(!csT.lock){
-    if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
-    csT.lock=Math.abs(dx)>Math.abs(dy)?'x':'y';
-    if(csT.lock==='x')csRailEl.classList.add('show');
+    if(Math.abs(dx)<7&&Math.abs(dy)<7)return;
+    csT.lock=Math.abs(dx)>Math.abs(dy)*0.8?'x':'y';
+    if(csT.lock==='x'){try{csStackEl.setPointerCapture(e.pointerId);}catch(_){} csStackEl.classList.add('dragging');csRailEl.classList.add('show');}
+    else{csT=null;return;}
   }
-  if(csT.lock!=='x')return;
   e.preventDefault();
   const target=Math.max(0,Math.min(csRows.length-1,csT.from+Math.round(-dx/CS_STEP)));
   if(target!==csCur)csGo(target);
-},{passive:false});
-const csTEnd=()=>{if(csT&&csT.lock==='x')csFlash();csT=null;};
-$('#cs-stack').addEventListener('touchend',csTEnd);
-$('#cs-stack').addEventListener('touchcancel',csTEnd);
+});
+const csTEnd=e=>{
+  if(!csT||(e&&e.pointerId!==csT.id))return;
+  if(csT.lock==='x'){csJustDragged=true;setTimeout(()=>csJustDragged=false,60);csFlash();}
+  csStackEl.classList.remove('dragging');csT=null;
+};
+csStackEl.addEventListener('pointerup',csTEnd);
+csStackEl.addEventListener('pointercancel',csTEnd);
+csStackEl.addEventListener('lostpointercapture',e=>{if(e.target===csStackEl)csTEnd(e);});
+// กันไม่ให้การลากไปกดปุ่ม/หัวแฟ้มโดยไม่ตั้งใจ
+csStackEl.addEventListener('click',e=>{if(csJustDragged){e.stopPropagation();e.preventDefault();}},true);
+// กันเบราว์เซอร์บางตัว (iOS/LINE) แย่งท่าทางปัดแนวนอน
+csStackEl.addEventListener('touchmove',e=>{if(csT&&csT.lock==='x')e.preventDefault();},{passive:false});
 
 /* ---------- แชร์สำนวนหลัก (ดูอย่างเดียว) ---------- */
 function csShareGroup(gid,onlyCase){
