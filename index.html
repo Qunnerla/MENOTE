@@ -634,7 +634,7 @@ input.shake{animation:shake .38s ease}
 .cs-rail.drag .cs-bub,.cs-rail.show .cs-bub{opacity:1;transform:translate(calc(-1 * var(--ax)),0)}
 .cs-railhint{display:flex;justify-content:space-between;max-width:840px;margin:4px auto 0;padding:0 10px;font-size:11px;color:var(--muted)}
 /* โหมดดูอย่างเดียว (ลิงก์แชร์สำนวนหลัก) */
-.ro-cases .cs-btag button,.ro-cases [data-cs-newcase],.ro-cases [data-cs-newgroup],.ro-cases .local-note,.ro-cases #cs-edit,.ro-cases #cs-addlog,.ro-cases .cs-acts{display:none!important}
+.ro-cases #cs-share,.ro-single #cs-back,.ro-cases .cs-btag button,.ro-cases [data-cs-newcase],.ro-cases [data-cs-newgroup],.ro-cases .local-note,.ro-cases #cs-edit,.ro-cases #cs-addlog,.ro-cases .cs-acts{display:none!important}
 .ro-cases .cs-sw{pointer-events:none}
 .ro-cases .cs-btag{padding-right:16px}
 
@@ -761,6 +761,7 @@ input.shake{animation:shake .38s ease}
             <button class="cs-pillbtn" id="cs-addlog"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>บันทึก</button>
           </div>
         </div>
+        <button class="cs-icon" id="cs-share" aria-label="แชร์สำนวนนี้" title="แชร์สำนวนนี้"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg></button>
         <img class="mascot sm" data-cat="heart" alt="">
       </div>
       <div class="tabs" id="cs-tabs"></div>
@@ -2399,6 +2400,7 @@ $('#cs-addlog').onclick=()=>{if(csShared)return;
   buzz(10,'tap');const it=csRows[csCur];
   csNewLog(it&&it.kind==='doc'?it.date:(csC.from&&csC.to&&csToday()>=csC.from&&csToday()<=csC.to?csToday():csC.from||csToday()));
 };
+$('#cs-share').onclick=()=>{if(csShared||!csC)return;csShareGroup(csC._g,csC.id);};
 $('#cs-sw').onclick=()=>{if(csShared)return;csC.open=!csIsOpen(csC);save();csRender();buzz(10,'pop');};
 $('#cs-sh-close').onclick=()=>{buzz(8,'tap');csCloseSheet();};
 $('#cs-sh-save').onclick=csSaveSheet;
@@ -2450,14 +2452,15 @@ $('#cs-stack').addEventListener('touchend',csTEnd);
 $('#cs-stack').addEventListener('touchcancel',csTEnd);
 
 /* ---------- แชร์สำนวนหลัก (ดูอย่างเดียว) ---------- */
-function csShareGroup(gid){
+function csShareGroup(gid,onlyCase){
   const g=state.caseBook.groups.find(x=>x.id===gid);if(!g)return;
   buzz(12,'pop');
-  const pack={t:g.title,c:g.cases.map(c=>({i:c.id,t:c.title,s:c.span,f:c.from,o:c.to,m:c.mode,d:c.days,oc:c.offCount,of:c.off,st:c.st,en:c.en,n:c.note,co:c.color,tb:c.tbd?1:0,op:typeof c.open==='boolean'?(c.open?1:0):null}))};
+  const list=onlyCase?g.cases.filter(c=>c.id===onlyCase):g.cases;
+  const pack={t:g.title,v:onlyCase||undefined,c:list.map(c=>({i:c.id,t:c.title,s:c.span,f:c.from,o:c.to,m:c.mode,d:c.days,oc:c.offCount,of:c.off,st:c.st,en:c.en,n:c.note,co:c.color,tb:c.tbd?1:0,op:typeof c.open==='boolean'?(c.open?1:0):null}))};
   const url=location.origin+location.pathname+'#g='+csB64e(JSON.stringify(pack));
-  shareLink(url,'MENOTE · '+g.title);
+  shareLink(url,'MENOTE · '+(onlyCase?list[0].title:g.title));
   const local=new Set((state.logAdds||[]).map(x=>x.date).concat(Object.keys(state.logEdits||{})));
-  const inGroup=[...local].filter(ds=>g.cases.some(c=>!c.tbd&&ds>=c.from&&ds<=c.to)).length;
+  const inGroup=[...local].filter(ds=>list.some(c=>!c.tbd&&ds>=c.from&&ds<=c.to)).length;
   if(inGroup)setTimeout(()=>toast(`มี ${inGroup} บันทึกที่อยู่แค่ในเครื่องนี้ คนอื่นจะยังไม่เห็นจนกว่าจะอัปเดตไฟล์เว็บ`,true),1900);
 }
 function csOpenShared(code){
@@ -2470,6 +2473,7 @@ function csOpenShared(code){
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id==='s-log'));
   document.title='MENOTE · '+(pack.t||'สำนวน');
   csShow('board');csRenderBoard();
+  if(pack.v&&csFind(pack.v)){document.body.classList.add('ro-single');csOpenCase(pack.v);document.title='MENOTE · '+csFind(pack.v).title;}
   return true;
 }
 
