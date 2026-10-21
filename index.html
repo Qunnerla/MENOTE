@@ -283,6 +283,8 @@ input.shake{animation:shake .38s ease}
 .log .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .log .pill{background:var(--tint);color:var(--blue-deep);border-radius:999px;padding:3px 9px;font-size:11.5px}
 .log .pill.time{background:none;border:1px solid var(--line);color:var(--muted)}
+.log .log-cat{flex:none;align-self:center;width:62px;height:62px;object-fit:contain;margin:-4px -2px -4px 0;
+  filter:drop-shadow(0 7px 10px rgba(60,90,110,.14))}
 .log .caret{flex:none;width:20px;height:20px;stroke:var(--muted);stroke-width:2;fill:none;margin-top:4px;transition:transform .3s var(--spring)}
 .log.open .caret{transform:rotate(180deg)}
 .log .more{display:none;border-top:1px solid var(--line);padding:13px 15px 15px}
@@ -406,18 +408,20 @@ input.shake{animation:shake .38s ease}
   #lsheet .sh-head,#lsheet .company-grid,#lsheet .acts{width:100%;max-width:1800px;margin-left:auto;margin-right:auto}
   #lsheet .sh-head{margin-bottom:24px}
   #lsheet .sh-head h3{font-size:26px}
-  #lsheet .company-grid{display:grid;grid-template-columns:1fr 1fr minmax(300px,.82fr);grid-template-areas:"title title project" "summary summary date" "summary summary time" "cat cat ." "details details details";gap:18px 22px;align-items:start}
+  #lsheet .company-grid{display:grid;grid-template-columns:1fr 1fr minmax(300px,.82fr);grid-template-areas:"title title project" "summary summary date" "summary summary time" "cat cat type" "details details details";gap:18px 22px;align-items:start}
   #lsheet .company-grid>.f{margin:0}
-  #lsheet .cf-title{grid-area:title}#lsheet .cf-summary{grid-area:summary}#lsheet .cf-project{grid-area:project}#lsheet .cf-cat{grid-area:cat}#lsheet .cf-date{grid-area:date}#lsheet .cf-time{grid-area:time}#lsheet .cf-details{grid-area:details}
+  #lsheet .cf-title{grid-area:title}#lsheet .cf-summary{grid-area:summary}#lsheet .cf-project{grid-area:project}#lsheet .cf-cat{grid-area:cat}#lsheet .cf-date{grid-area:date}#lsheet .cf-time{grid-area:time}#lsheet .cf-details{grid-area:details}#lsheet .cf-type{grid-area:type}
   #lsheet .cf-summary textarea{min-height:166px}
   #lsheet .dets{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:10px}
   #lsheet .acts{justify-content:flex-end;position:sticky;bottom:-34px;background:var(--surface);padding:14px 0 34px;margin-top:20px}
   #lsheet .acts .primary{flex:0 0 240px}
 }
 @media(min-width:900px) and (max-width:1199px){
-  #lsheet .company-grid{grid-template-columns:1fr 1fr;grid-template-areas:"title project" "summary summary" "cat cat" "date time" "details details"}
+  #lsheet .company-grid{grid-template-columns:1fr 1fr;grid-template-areas:"title project" "summary summary" "cat type" "date time" "details details"}
 }
 @media(max-width:480px){
+  .log>.head{gap:9px;padding-left:12px;padding-right:12px}
+  .log .log-cat{width:50px;height:50px;margin:0 -3px 0 0}
   .pick-options{grid-template-columns:1fr}
   .two{gap:8px}
   .sheet{padding-left:14px;padding-right:14px}
@@ -433,6 +437,227 @@ input.shake{animation:shake .38s ease}
   .glass-cat{--cat-far:.07;--cat-mid:.6;--cat-near:.95;--cat-fade:.13;bottom:-62px;width:min(122vw,540px);animation-duration:9.5s}
   .glass-cat::after{opacity:.32}
 }
+
+/* ================= แฟ้มสำนวน (หน้า งานบริษัท) ================= */
+:root{--cs-lip:40px;--cs-gap:48px;--cs-move:cubic-bezier(.3,1.25,.5,1)}
+.cs-view{display:none}
+.cs-view.on{display:block;animation:csIn .45s var(--cs-move)}
+@keyframes csIn{from{opacity:0;transform:translateY(14px) scale(.98)}}
+
+/* แผงผนัง */
+.cs-groups{display:flex;flex-direction:column;gap:30px;margin-top:6px}
+.cs-board{position:relative;padding:40px 14px 26px;border-radius:26px;
+  background:radial-gradient(circle at 1px 1px,color-mix(in srgb,var(--blue-deep) 16%,transparent) 1px,transparent 1.5px) 0 0/13px 13px,
+    linear-gradient(170deg,color-mix(in srgb,var(--tint) 70%,var(--bg)),var(--tint));
+  box-shadow:inset 0 2px 0 color-mix(in srgb,var(--surface) 70%,transparent),inset 0 0 0 1px var(--line),0 22px 40px -30px rgba(40,70,90,.55)}
+.cs-btag{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-1.2deg);display:flex;align-items:center;gap:6px;
+  max-width:calc(100% - 40px);background:#FFF8E8;color:#7D6744;font-family:"Mali",cursive;font-weight:600;font-size:13.5px;
+  padding:4px 8px 4px 16px;border-radius:5px;box-shadow:0 4px 10px -6px rgba(0,0,0,.3)}
+.cs-btag span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-btag::before,.cs-btag::after{content:"";position:absolute;top:-6px;width:34px;height:14px;background:color-mix(in srgb,var(--tint) 85%,transparent);transform:rotate(-8deg)}
+.cs-btag::before{left:-14px}.cs-btag::after{right:-14px;transform:rotate(9deg)}
+.cs-btag button{flex:none;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;color:inherit;opacity:.7}
+.cs-btag button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 14px}
+@media(min-width:700px){.cs-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1100px){.cs-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1500px){.cs-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+
+.cs-case{position:relative;display:block;align-self:start;width:100%;padding-top:16px;text-align:left;transform:rotate(var(--rot));transition:transform .4s var(--cs-move)}
+.cs-case:hover,.cs-case:focus-visible{transform:rotate(0) translateY(-4px)}
+.cs-case:active{transform:rotate(0) scale(.97)}
+.cs-case .pin{position:absolute;z-index:4;top:4px;left:50%;width:17px;height:17px;margin-left:-8px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.85) 0 2px,var(--pin) 3.5px);box-shadow:0 4px 5px -1px rgba(30,50,60,.35)}
+.cs-case .ftab{position:absolute;top:8px;left:10px;width:48%;height:20px;border-radius:9px 9px 0 0;background:color-mix(in srgb,var(--fc) 86%,#56707e)}
+.cs-case .peek{position:absolute;top:13px;height:30px;background:var(--surface);border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.cs-case .peek::before{content:"";position:absolute;left:8px;right:8px;top:7px;height:2px;border-radius:2px;background:var(--line);box-shadow:0 5px 0 var(--line)}
+.cs-case .fbody{position:relative;display:block;background:var(--fc);border-radius:5px 14px 16px 16px;padding:14px 10px 12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 16px 24px -16px rgba(40,70,90,.6)}
+.cs-case .label{display:block;background:var(--surface);border-radius:10px;padding:9px 10px 10px;box-shadow:0 2px 6px -3px rgba(40,70,90,.25)}
+.cs-case .no{display:block;font-size:11px;color:var(--muted)}
+.cs-case h3{margin:1px 0 0;font-size:15px;font-weight:600;line-height:1.35;color:var(--ink)}
+.cs-case .span{display:inline-block;margin-top:5px;font-family:"Mali",cursive;font-weight:600;font-size:12px;color:#fff;background:var(--pin);border-radius:999px;padding:1px 9px}
+.cs-case .per{display:block;margin-top:6px;font-size:11.5px;color:var(--muted);line-height:1.4}
+.cs-case .note{display:block;margin-top:3px;font-size:11px;line-height:1.45;color:var(--muted)}
+.cs-case .cs-cstat{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:9px;font-size:11.5px;color:var(--muted)}
+.cs-case .cs-cstat b{font-family:"Mali",cursive;font-size:16px;color:var(--ink);margin-right:2px}
+.cs-case .ex{display:block;margin-top:3px;font-size:11px;color:var(--muted)}
+.cs-case .tbar{display:flex;gap:2px;height:7px;margin-top:8px;border-radius:9px;overflow:hidden}
+.cs-case .tbar i{display:block;height:100%}
+.cs-case .tbar.none{border:1.5px dashed color-mix(in srgb,var(--pin) 60%,transparent)}
+.cs-case .stamp{position:absolute;right:6px;bottom:-12px;font-family:"Mali",cursive;font-weight:600;font-size:12px;color:var(--sc);
+  border:2px solid var(--sc);border-radius:8px;padding:1px 8px;background:color-mix(in srgb,var(--surface) 75%,transparent);transform:rotate(-9deg)}
+.cs-case.closed .fbody{filter:saturate(.75)}
+.cs-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:170px;margin-top:16px;border-radius:16px;
+  border:2px dashed color-mix(in srgb,var(--blue-deep) 30%,transparent);color:var(--blue-deep);font-size:13px;background:color-mix(in srgb,var(--surface) 40%,transparent);transition:transform .25s var(--cs-move)}
+.cs-add:active{transform:scale(.96)}
+.cs-add b{font-size:28px;line-height:1;font-weight:400}
+.cs-addgroup{width:100%;padding:14px 0;border-radius:18px;border:2px dashed var(--line);color:var(--blue-deep);font-size:14px;font-weight:500}
+.cs-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:20px 4px 0;font-size:12px;color:var(--muted)}
+.cs-legend span{display:flex;align-items:center;gap:6px}
+.cs-legend i{width:10px;height:10px;border-radius:3px;background:var(--pc)}
+
+/* หัวสำนวน */
+.cs-head{display:flex;align-items:flex-start;gap:12px}
+.cs-icon{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--blue-deep)}
+.cs-icon:active{transform:scale(.92)}
+.cs-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cs-head .tx{flex:1;min-width:0}
+.cs-head small{display:block;font-size:12px;color:var(--muted)}
+.cs-head h1{margin:0;font-size:19px;font-weight:600;line-height:1.35;font-family:inherit}
+.cs-head h1 em{display:inline-block;white-space:nowrap;font-style:normal;font-family:"Mali",cursive;font-size:13.5px;color:#fff;background:var(--pin);border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:2px}
+.cs-head p{margin:1px 0 0;font-size:12.5px;color:var(--muted)}
+.cs-head p b{color:var(--ink);font-weight:500}
+.cs-hrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.cs-sw{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:12.5px;font-weight:500;color:var(--sc)}
+.cs-sw i{position:relative;width:34px;height:20px;border-radius:999px;background:var(--sc)}
+.cs-sw i::after{content:"";position:absolute;top:2px;left:16px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .35s var(--cs-move)}
+.cs-sw[aria-checked="false"] i::after{left:2px}
+.cs-pillbtn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:12.5px;color:var(--blue-deep)}
+.cs-pillbtn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#cs-case .tabs{margin-top:14px;margin-bottom:2px}
+#cs-case .tab .dot{width:9px;height:9px;border-radius:3px;background:var(--pc)}
+#cs-case .tab.on{background:var(--pc);border-color:var(--pc)}
+#cs-case .tab.on .dot{background:#fff}
+
+/* กองเอกสาร */
+.cs-deck{display:flex;gap:8px;margin:14px auto 0;max-width:860px;height:clamp(440px,calc(100dvh - 380px),980px)}
+.cs-stack{position:relative;flex:1;min-width:0;margin-left:6px;touch-action:pan-y;isolation:isolate}
+#cs-case.closed .cs-stack{filter:saturate(.8)}
+.cs-f{position:absolute;left:0;right:0;top:0;transform-origin:50% 0;transition:transform .6s var(--cs-move),opacity .4s ease,filter .5s ease;will-change:transform}
+.cs-f.gone,.cs-f.far{opacity:0;pointer-events:none}
+.cs-lip{position:relative;z-index:2;display:flex;align-items:center;gap:10px;width:calc(100% + 12px);margin:0 -6px;height:var(--cs-lip);
+  padding:0 12px 0 10px;border-radius:13px;text-align:left;background:color-mix(in srgb,var(--pc) 22%,var(--surface));color:color-mix(in srgb,var(--pc) 70%,var(--ink));
+  box-shadow:0 6px 14px -8px rgba(40,70,90,.35);transition:background .4s,color .4s}
+.cs-lip .day{font-family:"Mali",cursive;font-weight:600;font-size:21px;line-height:1;min-width:24px;text-align:center}
+.cs-lip .mo{display:flex;flex-direction:column;line-height:1.15;min-width:0;flex:1}
+.cs-lip .mo b{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-lip .mo small{font-size:11px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-lip .hrs{flex:none;display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:500;padding:3px 10px 3px 8px;border-radius:999px;background:color-mix(in srgb,var(--surface) 62%,transparent)}
+.cs-lip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.cs-f.front .cs-lip{background:var(--pc);color:#fff}
+.cs-f.front .cs-lip .hrs{background:rgba(255,255,255,.22)}
+.cs-f.dv .cs-lip{width:80%;background:var(--pc);color:#fff;border-radius:13px 13px 13px 4px}
+.cs-f.dv .cs-lip .ic{flex:none;width:26px;height:26px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.22)}
+.cs-f.dv .cs-lip .hrs{background:rgba(255,255,255,.22)}
+.cs-f.cs-empty .cs-lip{background:var(--bg);color:var(--muted);border:1.5px dashed var(--line);box-shadow:none}
+.cs-f.cs-empty.front .cs-lip{background:var(--surface);color:var(--ink)}
+.cs-f.off .cs-lip{opacity:.8}
+.cs-paper{position:absolute;left:0;right:0;top:calc(var(--cs-lip) - 14px);bottom:0;z-index:1;background:var(--surface);border:1px solid var(--line);
+  border-radius:6px 6px 22px 22px;box-shadow:0 18px 40px -22px rgba(40,70,90,.45);overflow:hidden}
+.cs-paper::before{content:"";position:absolute;left:14px;right:14px;top:14px;height:6px;border-radius:0 0 6px 6px;background:color-mix(in srgb,var(--pc) 16%,var(--surface))}
+.cs-f:not(.front) .cs-paper{background:color-mix(in srgb,var(--pc) 6%,var(--surface))}
+.cs-f.dv .cs-paper{border-top:6px solid var(--pc)}
+.cs-f.cs-empty .cs-paper{background:repeating-linear-gradient(var(--surface) 0 31px,var(--bg) 31px 32px);border-style:dashed}
+.cs-body{position:absolute;inset:20px 0 0;overflow-y:auto;overscroll-behavior:contain;padding:14px 18px 22px;opacity:0;transition:opacity .3s ease;scrollbar-width:none}
+.cs-body::-webkit-scrollbar{display:none}
+.cs-f.front .cs-body{opacity:1;transition-delay:.18s}
+.cs-f.front.bump .cs-lip{animation:csBump .55s var(--cs-move)}
+@keyframes csBump{35%{transform:translateY(-11px) scale(1.015)}}
+.cs-ph{display:flex;gap:10px;align-items:flex-start}
+.cs-ph .tx{flex:1;min-width:0}
+.cs-kind{display:block;font-size:12px;color:var(--pc);font-weight:500;line-height:1.5}
+.cs-kind::before{content:"";display:inline-block;width:8px;height:8px;border-radius:3px;background:var(--pc);margin-right:6px}
+.cs-kind em{font-style:normal;color:var(--ac);margin-left:10px}
+.cs-kind em::before{content:"";display:inline-block;width:8px;height:8px;border-radius:3px;background:var(--ac);margin-right:6px}
+.cs-kind span{color:var(--muted);font-weight:400}
+.cs-ph h2{margin:4px 0 0;font-size:17px;font-weight:600;line-height:1.45}
+.cs-ph img{flex:none;width:76px;height:76px;object-fit:contain;margin:-6px -6px -8px 0;filter:drop-shadow(0 8px 10px rgba(60,90,110,.16))}
+.cs-f.front .cs-ph img{animation:csPop .7s var(--cs-move) .2s both}
+@keyframes csPop{from{transform:translateY(14px) scale(.7);opacity:0}}
+.cs-recon{display:inline-block;margin-top:8px;font-size:11px;color:#94744B;background:#FFF6E6;border:1px dashed #E2C595;border-radius:8px;padding:1px 8px}
+.cs-sum{margin:10px 0 0;color:var(--muted);font-size:13.5px;line-height:1.7}
+.cs-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.cs-pill{font-size:11.5px;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--pc) 14%,var(--surface));color:color-mix(in srgb,var(--pc) 75%,var(--ink))}
+.cs-clock{display:flex;gap:10px;align-items:center;margin-top:14px;padding:10px 12px;border-radius:14px;background:var(--bg);font-size:12.5px;color:var(--muted)}
+.cs-clock b{display:block;font-family:"Mali",cursive;font-weight:600;font-size:17px;color:var(--ink);line-height:1.2}
+.cs-clock .cs-bar{flex:1;height:6px;border-radius:9px;background:var(--line);overflow:hidden;align-self:flex-end;margin-bottom:6px}
+.cs-clock .cs-bar i{display:block;height:100%;border-radius:9px;background:var(--pc);width:0;transition:width .9s var(--cs-move) .3s}
+.cs-f.front .cs-clock .cs-bar i{width:var(--w)}
+.cs-det{margin:16px 0 0;padding:0;list-style:none;counter-reset:d}
+.cs-det li{position:relative;padding:0 0 0 30px;margin-bottom:9px;font-size:13.5px;line-height:1.7}
+.cs-det li::before{counter-increment:d;content:counter(d);position:absolute;left:0;top:2px;width:21px;height:21px;border-radius:8px;display:grid;place-items:center;
+  font-size:11px;font-weight:600;background:color-mix(in srgb,var(--pc) 15%,var(--surface));color:color-mix(in srgb,var(--pc) 75%,var(--ink))}
+.cs-acts{display:flex;gap:8px;margin-top:16px}
+.cs-acts button{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);font-size:13px;color:var(--blue-deep);background:var(--surface)}
+.cs-acts .main{flex:1;background:var(--pc);border-color:var(--pc);color:#fff}
+.cs-acts svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cs-dvtop{display:flex;gap:10px;align-items:flex-start}
+.cs-dvtop .tx{flex:1;min-width:0}
+.cs-dvtop small{font-size:12px;color:var(--muted)}
+.cs-dvtop h2{margin:0;font-family:"Mali",cursive;font-weight:600;font-size:24px;line-height:1.25;color:var(--pc)}
+.cs-dvtop img{flex:none;width:70px;height:70px;object-fit:contain;margin:-4px -4px 0 0}
+.cs-dvstat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.cs-dvstat div{background:color-mix(in srgb,var(--pc) 10%,var(--surface));border-radius:14px;padding:8px 10px;font-size:11.5px;color:var(--muted)}
+.cs-dvstat b{display:block;font-family:"Mali",cursive;font-size:18px;color:var(--ink);line-height:1.25}
+.cs-mix{display:flex;gap:2px;height:7px;margin-top:10px;border-radius:9px;overflow:hidden}
+.cs-mix i{display:block}
+.cs-dvlist{margin:14px 0 0;padding:0;list-style:none}
+.cs-dvlist button{display:flex;align-items:center;gap:10px;width:100%;padding:9px 4px;border-bottom:1px solid var(--line);text-align:left}
+.cs-dvlist .n{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:600;
+  background:color-mix(in srgb,var(--pc) 15%,var(--surface));color:color-mix(in srgb,var(--pc) 75%,var(--ink))}
+.cs-dvlist .t{flex:1;min-width:0;font-size:13px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-dvlist .t small{display:block;font-size:11px;color:var(--muted)}
+.cs-dvlist .h{flex:none;font-size:11.5px;color:var(--muted)}
+.cs-dvlist .is-empty .t{color:var(--muted)}
+.cs-dvlist .is-empty .n{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted)}
+.cs-em{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:18px}
+.cs-em img{width:110px;height:110px;object-fit:contain;opacity:.9}
+.cs-em h2{margin:8px 0 2px;font-size:16px;font-weight:600}
+.cs-em p{margin:0;font-size:13px;color:var(--muted)}
+.cs-em .cs-acts{width:100%;max-width:360px}
+.cs-nodoc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;
+  border:1.5px dashed var(--line);border-radius:22px;background:color-mix(in srgb,var(--surface) 55%,transparent)}
+.cs-nodoc img{width:110px;height:110px;object-fit:contain}
+.cs-nodoc h2{margin:6px 0 2px;font-size:16px;font-weight:600}
+.cs-nodoc p{margin:0 0 12px;font-size:13px;color:var(--muted)}
+
+/* ตัวเลื่อนอุ้งแมว */
+.cs-rail{position:relative;z-index:5;flex:none;width:38px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.cs-rail.drag{cursor:grabbing}
+.cs-rail .track{position:absolute;left:50%;top:22px;bottom:22px;width:4px;margin-left:-2px;border-radius:4px;background:var(--line)}
+.cs-rail .ticks i{position:absolute;left:50%;top:calc(22px + (100% - 44px) * var(--r));width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
+  background:color-mix(in srgb,var(--pc) 55%,var(--surface));transition:transform .3s var(--cs-move)}
+.cs-rail .ticks i.dv{width:14px;height:4px;margin:-2px 0 0 -7px;border-radius:3px;background:var(--pc)}
+.cs-rail .ticks i.e{background:var(--surface);box-shadow:0 0 0 1.5px var(--line)}
+.cs-rail .ticks i.on{transform:scale(1.6);background:var(--pc)}
+.cs-paw{position:absolute;left:50%;top:calc(22px + (100% - 44px) * var(--r,0));width:38px;height:38px;margin-left:-19px;transform:translateY(-50%);border-radius:50%;
+  display:grid;place-items:center;color:#fff;background:var(--pc,var(--blue));box-shadow:0 8px 16px -6px color-mix(in srgb,var(--pc,#7CA3BE) 70%,#000),0 0 0 4px var(--bg);
+  transition:top .45s var(--cs-move),background .35s,transform .25s var(--cs-move)}
+.cs-paw svg{width:22px;height:22px;fill:currentColor;transform:rotate(-12deg);transition:transform .3s var(--cs-move)}
+.cs-rail.drag .cs-paw{transition:background .35s,transform .25s var(--cs-move);transform:translateY(-50%) scale(1.12)}
+.cs-rail.drag .cs-paw svg{transform:rotate(10deg)}
+.cs-bub{position:absolute;right:calc(100% + 10px);top:50%;transform:translate(6px,-50%);opacity:0;pointer-events:none;white-space:nowrap;background:var(--ink);color:var(--surface);
+  border-radius:12px;padding:5px 11px;font-size:12px;line-height:1.3;text-align:right;transition:opacity .2s,transform .25s var(--cs-move)}
+.cs-bub b{display:block;font-family:"Mali",cursive;font-weight:600;font-size:15px}
+.cs-bub::after{content:"";position:absolute;right:-5px;top:50%;margin-top:-5px;border:5px solid transparent;border-right:0;border-left-color:var(--ink)}
+.cs-rail.drag .cs-bub,.cs-rail.show .cs-bub{opacity:1;transform:translate(0,-50%)}
+
+/* ชีตสำนวน */
+#csheet .cs-days{display:flex;flex-wrap:wrap;gap:6px}
+#csheet .cs-days button,#csheet .cs-colors button,.cs-typepick button{padding:6px 11px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--muted);background:var(--bg)}
+#csheet .cs-days button.on,.cs-typepick button.on{background:var(--blue-deep);border-color:var(--blue-deep);color:#fff}
+#csheet .cs-colors{display:flex;gap:10px;flex-wrap:wrap}
+#csheet .cs-colors button{width:38px;height:38px;padding:0;border-radius:12px;background:var(--fc);box-shadow:inset 0 -8px 0 var(--pin)}
+#csheet .cs-colors button.on{outline:3px solid var(--blue-deep);outline-offset:2px}
+#csheet .cs-hint{margin:6px 0 0;font-size:12px;color:var(--muted)}
+#csheet .cs-check{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--muted)}
+#csheet .cs-check input{width:18px;height:18px}
+.cs-typepick{display:flex;flex-wrap:wrap;gap:6px}
+.cs-typepick button{display:inline-flex;align-items:center;gap:6px}
+.cs-typepick button::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--pc)}
+.cs-typepick button.on{background:var(--pc);border-color:var(--pc)}
+.cs-typepick button.on::before{background:#fff}
+.cs-typepick.also button.on{background:color-mix(in srgb,var(--pc) 20%,var(--surface));color:var(--ink);border-color:var(--pc)}
+.cs-typepick.also button.on::before{background:var(--pc)}
+.hide{display:none!important}
+
+@media(min-width:900px){
+  #s-log .cs-groups{max-width:1600px;margin-left:auto;margin-right:auto}
+  #cs-case .cs-head,#cs-case .tabs{max-width:860px;margin-left:auto;margin-right:auto}
+  .cs-deck{height:clamp(500px,calc(100dvh - 330px),1000px)}
+}
+@media(prefers-reduced-motion:reduce){.cs-f,.cs-body,.cs-clock .cs-bar i,.cs-paw{transition-duration:.01s!important}.cs-ph img,.cs-f.front.bump .cs-lip{animation:none!important}}
 
 </style>
 </head>
@@ -505,22 +730,40 @@ input.shake{animation:shake .38s ease}
   </section>
 
   <section class="screen" id="s-log">
-    <div class="top">
-      <div><h1>MENOTE</h1><p id="log-sub">กำลังโหลด…</p></div>
-      <img class="mascot" data-cat="write" alt="">
+    <div class="cs-view on" id="cs-boardview">
+      <div class="top">
+        <div><h1>MENOTE</h1><p id="log-sub">กำลังโหลด…</p></div>
+        <img class="mascot" data-cat="write" alt="">
+      </div>
+      <div class="cs-groups" id="cs-groups"></div>
+      <div class="cs-legend" id="cs-legend"></div>
+      <p class="local-note">สำนวนและบันทึกที่เพิ่มจากหน้านี้จะเก็บไว้ในเครื่องนี้</p>
     </div>
-    <div class="tabs" id="proj-tabs"></div>
-    <div class="tools">
-      <label class="srch">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input type="search" id="log-q" placeholder="ค้นหาบันทึก" autocomplete="off">
-      </label>
-      <select id="log-month" aria-label="เลือกช่วงเวลา"></select>
-      <button class="sortb" id="log-sort" data-order="desc">ใหม่ → เก่า</button>
+    <div class="cs-view" id="cs-case">
+      <div class="cs-head">
+        <button class="cs-icon" id="cs-back" aria-label="กลับแผงสำนวน"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="tx"><small id="cs-no"></small><h1 id="cs-title"></h1><p id="cs-sub"></p>
+          <div class="cs-hrow">
+            <button class="cs-sw" id="cs-sw" role="switch" aria-checked="true"><i></i><span></span></button>
+            <button class="cs-pillbtn" id="cs-edit"><svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>แก้ไข</button>
+            <button class="cs-pillbtn" id="cs-addlog"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>เพิ่มบันทึก</button>
+          </div>
+        </div>
+        <img class="mascot sm" data-cat="heart" alt="">
+      </div>
+      <div class="tabs" id="cs-tabs"></div>
+      <div class="cs-deck">
+        <section class="cs-stack" id="cs-stack" aria-live="polite"></section>
+        <div class="cs-rail" id="cs-rail" role="slider" tabindex="0" aria-label="เลื่อนเลือกเอกสาร">
+          <div class="track"></div>
+          <div class="ticks" id="cs-ticks"></div>
+          <div class="cs-paw" id="cs-paw">
+            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="15.8" rx="5.6" ry="4.7"/><ellipse cx="5.2" cy="10.2" rx="2.3" ry="2.9"/><ellipse cx="9.4" cy="6.4" rx="2.3" ry="2.9"/><ellipse cx="14.6" cy="6.4" rx="2.3" ry="2.9"/><ellipse cx="18.8" cy="10.2" rx="2.3" ry="2.9"/></svg>
+            <span class="cs-bub" id="cs-bub"></span>
+          </div>
+        </div>
+      </div>
     </div>
-    <button class="sharep" id="log-share"><svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg>แชร์บันทึกของ<b id="share-what">ทุกโปรเจกต์</b></button>
-    <p class="local-note">บันทึกที่เพิ่มจากหน้านี้จะเก็บไว้ในเครื่องนี้</p>
-    <div class="list" id="logs"></div>
   </section>
 
   <section class="screen" id="s-share">
@@ -569,6 +812,8 @@ input.shake{animation:shake .38s ease}
       <div class="project-pick"><select id="l-project"></select><button class="mini-plus" id="l-project-add" type="button" aria-label="เพิ่มโปรเจกต์" title="เพิ่มโปรเจกต์">+</button><button class="mini-plus mini-minus" id="l-project-delete" type="button" aria-label="ลบโปรเจกต์" title="ลบโปรเจกต์">−</button></div>
       <div class="project-create hide" id="project-create"><input type="text" id="l-new-project" maxlength="50" placeholder="ชื่อโปรเจกต์ใหม่"><button class="btn primary" id="l-project-save" type="button">เพิ่ม</button></div>
     </div>
+    <div class="f cf-type"><label>ประเภทงาน</label><div class="cs-typepick" id="l-type"></div>
+      <label style="margin-top:10px">ทำงานอื่นร่วมด้วย (ถ้ามี)</label><div class="cs-typepick also" id="l-also"></div></div>
     <div class="f cf-cat"><label for="l-cat">หมวดงาน</label>
       <div class="tag-editor" id="tag-editor"><div class="tag-chips" id="l-cat-chips"></div><input type="text" id="l-cat" maxlength="40" placeholder="พิมพ์แล้วกด Enter"></div>
     </div>
@@ -581,6 +826,44 @@ input.shake{animation:shake .38s ease}
     <button class="btn ghost" id="l-close" aria-label="ปิด">✕</button>
     <button class="btn del" id="l-reset" aria-label="คืนค่าเดิม">↺</button>
     <button class="btn primary" id="l-save">บันทึก</button>
+  </div>
+</div>
+<div class="sheet" id="csheet" role="dialog" aria-modal="true">
+  <div class="grip"></div>
+  <div class="sh-head"><h3 id="cs-sh-title">สำนวนใหม่</h3><img class="mascot sm" data-cat="write" alt=""></div>
+  <div id="cs-f-groupmode">
+    <div class="f"><label for="cs-g-title">ชื่อสำนวนหลัก</label><input type="text" id="cs-g-title" maxlength="60" placeholder="เช่น ฝึกงาน, งานร้านโกดังเลยสมาร์ท"></div>
+    <p class="cs-hint">สำนวนหลักคือแผงที่รวมสำนวนย่อยไว้ด้วยกัน</p>
+  </div>
+  <div id="cs-f-casemode">
+    <div class="f"><label for="cs-c-title">ชื่อสำนวนย่อย</label><input type="text" id="cs-c-title" maxlength="60" placeholder="เช่น ฝึกงานสังเกตการณ์"></div>
+    <div class="two">
+      <div class="f"><label for="cs-c-span">ป้ายระยะเวลา</label><input type="text" id="cs-c-span" maxlength="20" placeholder="เช่น 10 วัน, 4 เดือน"></div>
+      <div class="f"><label for="cs-c-group">อยู่ในสำนวนหลัก</label><select id="cs-c-group"></select></div>
+    </div>
+    <div class="f"><label>ช่วงวันที่</label>
+      <div class="two"><div><input type="date" id="cs-c-from" aria-label="วันเริ่ม"></div><div><input type="date" id="cs-c-to" aria-label="วันจบ"></div></div>
+      <label class="cs-check"><input type="checkbox" id="cs-c-tbd"> ยังไม่กำหนดวัน</label>
+    </div>
+    <div class="f"><label>เอกสารในสำนวน</label>
+      <select id="cs-c-mode">
+        <option value="daily">ทุกวัน — 1 วัน = 1 ฉบับ</option>
+        <option value="weekday">เฉพาะบางวันในสัปดาห์ — 1 วัน = 1 ฉบับ</option>
+        <option value="free">ตามบันทึกที่มี</option>
+      </select>
+      <div class="cs-days hide" id="cs-c-days" style="margin-top:8px"></div>
+    </div>
+    <div class="two" id="cs-c-dailyrow">
+      <div class="f"><label for="cs-c-offcount">จำนวนวันหยุด</label><input type="text" inputmode="numeric" id="cs-c-offcount" maxlength="2" value="0"></div>
+      <div class="f"><label>เวลางานปกติ</label><div class="two"><div><input type="time" id="cs-c-st" aria-label="เวลาเข้า"></div><div><input type="time" id="cs-c-en" aria-label="เวลาเลิก"></div></div></div>
+    </div>
+    <div class="f"><label for="cs-c-note">หมายเหตุบนแฟ้ม</label><input type="text" id="cs-c-note" maxlength="80" placeholder="เช่น ที่ร้าน 08:00–18:00 น."></div>
+    <div class="f"><label>สีแฟ้ม</label><div class="cs-colors" id="cs-c-colors"></div></div>
+  </div>
+  <div class="acts">
+    <button class="btn ghost" id="cs-sh-close" aria-label="ปิด">✕</button>
+    <button class="btn del" id="cs-sh-del" aria-label="ลบ">🗑</button>
+    <button class="btn primary" id="cs-sh-save">บันทึก</button>
   </div>
 </div>
 <div class="sheet pick-sheet" id="add-picker" role="dialog" aria-modal="true" aria-labelledby="add-picker-title">
@@ -613,6 +896,7 @@ const LOGS=[
   {
     date: "2026-09-09",
     project: "cat-hotel",
+    cat: "run",
     category: "หน้าโหลด · PDPA · น้องแมวในหน้าจอง · ความเร็ว",
     title: "รื้อหน้าโหลด ใส่น้องแมวในกล่องเลือกแบบพัก และเขียนนโยบาย PDPA ใหม่",
     summary: "เช้าถึงบ่ายเป็นงานหน้าตา รื้อหน้าโหลดใหม่ให้เหลือแค่น้องแมวกับรอยเท้าที่ไล่สว่าง แล้วใส่น้องแมวประจำแบบพักลงกล่องพักค้างคืนกับฝากรายชั่วโมง กดสลับแล้วโผล่ขึ้นมุดลงได้ กลางวันเขียนประกาศความเป็นส่วนตัวใหม่ทั้งฉบับตามแบบ PDPA พร้อมช่องยินยอมแยกที่เก็บลงฐานข้อมูลจริง ปิดท้ายด้วยการวัดความเร็วเว็บ จนเจอว่าจอขาวตอนเปิดในไลน์เกิดจากเซิร์ฟเวอร์ต้องรอ Supabase ตอบเรื่องสีธีมก่อนทุกครั้งที่มีคนเปิดหน้า",
@@ -638,6 +922,7 @@ const LOGS=[
   {
     date: "2026-09-02",
     project: "cat-hotel",
+    cat: "write",
     category: "ราคา · เลขที่จอง · ฟอนต์แบรนด์ · walk-in",
     title: "เปิดให้แอดมินต่อราคาเองได้ เปลี่ยนเลขที่จองเป็นเลขคิว 6 หลัก และวางฟอนต์แบรนด์ทั้งระบบ",
     summary: "ปิดแผนงาน 5 ข้อที่คุยกับพี่ปุ้ยไว้ทั้งชุด เริ่มจากช่องกรอกราคาเองสำหรับเคสเหมาเดือนและวอล์คอินที่ต่อราคากันหน้างาน ตามด้วยเปลี่ยนรูปแบบเลขที่จองจาก BK-20260827-812 เป็นเลขคิว 6 หลักที่ลูกค้าอ่านทางโทรศัพท์ได้ ตัดขั้นตอนให้ลูกค้ายืนยันด้วยเลขคิวออกทั้งหมด วางฟอนต์แบรนด์ Poppins/Inter/LINE Seed Sans TH ทั้งเว็บจองและหลังบ้าน และปิดช่องว่างของการจองแทนลูกค้าที่ไม่มีไลน์",
@@ -663,6 +948,7 @@ const LOGS=[
   {
     date: "2026-08-27",
     project: "cat-hotel",
+    cat: "write",
     category: "จองให้ลูกค้า · ลูกค้าเดิม · ความปลอดภัย · UI หลังบ้าน",
     title: "เปิดระบบจองให้ลูกค้าจากหลังบ้าน เลขคิวฝากจอง ระบบจำลูกค้าเดิม แล้วรื้อ UI หลังบ้านและปิดสิทธิ์ API",
     summary: "ครึ่งวันแรกทำใบเสร็จ 80 มม. ระบบเลือกเลขห้อง ปิดรูรั่วการจัดห้อง แล้วต่อด้วยระบบจองให้ลูกค้าทางโทรศัพท์ เลขคิวให้ลูกค้ายืนยันเอง และระบบจำลูกค้าเดิม ครึ่งวันหลังแก้บั๊กหน้าจอง LINE ที่กดย้อนกลับแล้วค้าง ขยายตัวอักษรหลังบ้านทั้งระบบให้พนักงานอ่านง่าย ทำการ์ดรายละเอียดการจองพร้อมรูปน้องแมว ปิดสิทธิ์ API หลังบ้านที่เคยเปิดโล่ง และปิดท้ายด้วยการเปิดให้ลูกค้าพิมพ์เลขคิวยืนยันการจองในแชต LINE ได้โดยตรง",
@@ -706,6 +992,7 @@ const LOGS=[
   {
     date: "2026-08-26",
     project: "cat-hotel",
+    cat: "angry",
     category: "ความปลอดภัย · ห้องพัก",
     title: "เพิ่มความปลอดภัยหน้าหลังบ้าน และทดลองผังห้อง 3 มิติก่อนยกเลิก",
     summary: "เสริมการป้องกันหน้า Staff Dashboard ทำ API ตรวจห้องว่าง ทดลองผังห้องแบบ 3 มิติแล้วตัดสินใจไม่ใช้ และปรับการตรวจข้อมูลในหน้าจองให้เตือนสดขณะกรอก",
@@ -724,6 +1011,7 @@ const LOGS=[
   {
     date: "2026-08-19",
     project: "cat-hotel",
+    cat: "butterfly",
     category: "รูปภาพ · Mobile UI",
     title: "เพิ่มอัปโหลดรูปน้องแมวและแก้การใช้งานวันที่บนมือถือ",
     summary: "ทำระบบอัปโหลดรูปน้องแมวพร้อมแปลงเป็น WebP ป้องกันชื่อไฟล์ชนกัน และปรับช่องวันที่ให้ใช้งานบนมือถือได้ดีขึ้น",
@@ -738,6 +1026,7 @@ const LOGS=[
   {
     date: "2026-08-18",
     project: "cat-hotel",
+    cat: "wave",
     category: "ภาษา · รูปภาพ",
     title: "เพิ่มรูปน้องแมวและรองรับภาษาไทย–อังกฤษ",
     summary: "ขยายข้อมูลน้องแมวให้มีรูปประจำตัว และเพิ่มระบบข้อความสองภาษาเพื่อรองรับการใช้งานของลูกค้าและพนักงาน",
@@ -752,6 +1041,7 @@ const LOGS=[
   {
     date: "2026-08-10",
     project: "cat-hotel",
+    cat: "write",
     category: "Staff Dashboard",
     title: "เปิดระบบหลังบ้านพนักงานครบทุกหมวดและเพิ่มเครื่องมือล้างข้อมูลทดสอบ",
     summary: "เชื่อมแดชบอร์ดพนักงานกับข้อมูลจริง เพิ่มจัดการห้อง การจอง การชำระเงิน ลูกค้า และการลบข้อมูลทดสอบแบบตรวจสิทธิ์ Owner",
@@ -767,6 +1057,7 @@ const LOGS=[
   {
     date: "2026-08-08",
     project: "cat-hotel",
+    cat: "heart",
     category: "ชำระเงิน · LINE",
     title: "ทำระบบมัดจำสองขั้นและใบยืนยันผ่าน LINE",
     summary: "วางขั้นตอนตรวจมัดจำ แยกยอดคงเหลือวันเช็กอิน และทำใบยืนยันแบบย่อให้อ่านง่ายใน LINE",
@@ -781,6 +1072,7 @@ const LOGS=[
   {
     date: "2026-08-05",
     project: "cat-hotel",
+    cat: "cheer",
     category: "เริ่มระบบ · Production",
     title: "เริ่มระบบจองโรงแรมแมวและเชื่อม Production",
     summary: "สร้างโครงระบบจอง เชื่อม Supabase และ LINE OA ตั้งค่า Vercel พร้อมนำธีมและโลโก้จริงมาใช้กับหน้าจองลูกค้า",
@@ -941,6 +1233,37 @@ const LOGS=[
     ],
     time: "18:21–23:35 น.",
   },
+  // ---- เพิ่ม 21 ต.ค. 2569: เดือนแรก (พ.ค.) + ฝึกงานสังเกตการณ์ (5–14 ต.ค.) ----
+  {"date": "2026-05-13", "project": "pet-store", "type": "shop", "cat": "heart", "category": "ธนาคาร · QR · โลโก้ · PWA", "title": "เตรียมช่องทางชำระเงิน โลโก้ร้าน และตั้งเว็บให้เพิ่มเป็นแอปได้", "summary": "ใส่รูปบัญชีธนาคารสำหรับหน้าชำระเงิน วางโลโก้ร้าน และสร้าง manifest ให้ลูกค้ากด Add to Home Screen เป็นแอปบนมือถือได้", "details": ["เพิ่มรูปบัญชีกสิกรไทยและไทยพาณิชย์ สำหรับช่องโอนเงิน", "ใส่โลโก้ร้าน LOGO.PNG", "สร้าง manifest.json สำหรับ PWA (เซฟตอนตี 3 ของคืนนั้น)"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-18", "project": "pet-store", "type": "shop", "cat": "write", "category": "Supabase · ฐานข้อมูล · Vercel", "title": "วางฐานข้อมูล Supabase ย้ายแคตตาล็อกจาก Excel และเชื่อม Vercel", "summary": "ทั้งวันเป็นงานหลังบ้าน วางตารางสินค้า หมวด ขนาด ธนาคาร QR และการตั้งค่าบน Supabase เขียนสคริปต์ดึงสินค้าจาก Excel ขึ้นฐานข้อมูล ทำ Edge Function รับออเดอร์ แล้วลิงก์โปรเจกต์กับ Vercel", "details": ["เขียน schema.sql และ order-rpc.sql (products, categories, product_sizes, banks, qrs, app_settings, orders)", "ทำ Edge Function submit-order สำหรับรับคำสั่งซื้อ", "สคริปต์ export-seed-from-xlsx / import-catalog ดึงสินค้าจากไฟล์ Excel ขึ้น Supabase พร้อมสคริปต์เช็กแคตตาล็อก", "สคริปต์ทดสอบส่งออเดอร์ ทั้งแบบทดสอบและแบบจริง", "ลิงก์โปรเจกต์ Vercel และทำสคริปต์ deploy", "ทำเช็กลิสต์ย้ายจาก Apps Script/Sheet ไป Supabase แบบเปิดทีละส่วน มีสวิตช์ถอยกลับได้", "ไฟล์งานเซฟช่วง 10:16–22:32 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-24", "project": "pet-store", "type": "shop", "cat": "butterfly", "category": "ธีม · หลังบ้าน", "title": "ทดสอบแผงตั้งค่าธีมในหลังบ้าน", "summary": "มีภาพหน้าจอทดสอบแผงตั้งค่าธีมของแอดมิน ทั้งหน้าแผงและตอนเลื่อนดูตัวควบคุมสี", "details": ["เก็บภาพหน้าจอแผงตั้งค่าธีม 4 ภาพ ตอนทดสอบการแสดงผลและการเลื่อน"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-25", "project": "pet-store", "type": "shop", "cat": "run", "category": "หน้าโหลด · เอกสารส่งต่อ", "title": "ทำหน้าโหลดโลโก้แยกมือถือ–คอม และเขียนคู่มือส่งต่อระบบ", "summary": "ทำภาพหน้าโหลดโลโก้แยกเวอร์ชันมือถือกับคอม เพิ่มการโชว์โปสเตอร์แบบตั้งเวลาตอนเปิดแอป อัปเดตไฟล์สินค้าและ Apps Script แล้วเขียน HANDOVER ให้บริษัทถือบัญชีระบบเอง", "details": ["ทำภาพหน้าโหลดโลโก้สำหรับ Desktop และ Mobile", "ระบบโชว์โปสเตอร์หน้าโหลดแบบตั้งเวลาเปลี่ยนภาพ", "อัปเดตไฟล์สินค้า LoeiSmartPed.Official.xlsx และ CODE.gs", "เพิ่ม .vercelignore", "เขียน HANDOVER.md: ย้าย GitHub / Vercel / Supabase / Google Sheet ไปอยู่ใต้บัญชีบริษัท และวิธีถอยกลับถ้าระบบใหม่มีปัญหา", "ไฟล์งานเซฟช่วง 09:32–14:45 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-26", "project": "pet-store", "type": "shop", "cat": "write", "category": "PRD · ออเดอร์ · Dashboard · Navbar", "title": "เขียน PRD ระบบ และทำตัวนับออเดอร์ตามสถานะในหลังบ้าน", "summary": "เช้าเขียน PRD สรุประบบโกดังเลยสมาร์ททั้งหมด จากนั้นทำป้ายนับออเดอร์ตามสถานะ โครงโหลดแดชบอร์ด ปุ่มส่งออเดอร์ที่บอกสถานะโหลด และแก้แถบเมนูให้ติดบนสุดบนมือถือ", "details": ["เขียน PRD_LoeiSmart.md เวอร์ชัน 1.0 สรุปฟีเจอร์ สถานะ และงานค้าง", "ป้ายนับออเดอร์ตามสถานะ อัปเดตตัวเลขทันทีไม่ต้องรอเซิร์ฟเวอร์", "skeleton ตอนโหลดแดชบอร์ดและรายการออเดอร์ พร้อมตัวบอกกำลัง sync", "ปุ่มส่งคำสั่งซื้อแสดงสถานะกำลังโหลด", "แก้ navbar ให้ fixed และคำนวณความสูงจอจริงบนมือถือ", "เพิ่มการโหลดข้อมูลแบบมี timeout และอัปเดตโลโก้", "ไฟล์งานเซฟช่วง 09:23–17:19 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-27", "project": "pet-store", "type": "shop", "cat": "heart", "category": "หน้าโหลดโปร · ลูกค้าประจำ · ใบเสนอราคา", "title": "ระบบลูกค้าประจำ ใบเสนอราคา และโหลดภาพโปรไว้ล่วงหน้า", "summary": "แก้หน้าโหลดให้โหลดภาพโปรไว้ก่อนแล้วค่อยเฟดเข้าหน้าร้าน เพิ่มช่องรหัสลูกค้าประจำตอนสั่งซื้อ และสร้างใบเสนอราคาจากออเดอร์", "details": ["โหลดภาพโปรโมชันล่วงหน้า แล้วค่อยเฟดเข้าหน้าร้านเมื่อพร้อม ไม่ให้จอว่าง", "ช่องกรอกรหัสลูกค้าประจำตอน checkout ตรวจรหัสแล้วแสดงชื่อลูกค้า", "สร้างใบเสนอราคาจากออเดอร์ที่ส่งแล้ว (quotation.js)", "อัปเดต CODE.gs", "ไฟล์งานเซฟช่วง 11:34–13:08 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-28", "project": "pet-store", "type": "shop", "cat": "butterfly", "category": "แบนเนอร์โปร · หลังบ้าน", "title": "แบนเนอร์โปรโมชันในหน้าร้าน ตั้งค่าได้จากหลังบ้าน", "summary": "ทำแบนเนอร์โปรแบบสไลด์ในหน้าร้าน เลือกหมวดที่จะโชว์ได้ และมีหน้าจัดการรูปแบนเนอร์ในหลังบ้าน", "details": ["แบนเนอร์โปรแบบสไลด์ เลือกให้โชว์ในหมวดที่ต้องการได้", "หน้าจัดการรูปแบนเนอร์ในหลังบ้าน เพิ่ม/ลบ/เลื่อนภาพ", "สวิตช์เปิดปิดโปรที่จำค่าไว้ในเครื่อง", "อัปเดต CODE.gs", "ไฟล์งานเซฟช่วง 08:44–13:45 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-29", "project": "pet-store", "type": "shop", "cat": "wave", "category": "LINE OA · LIFF · สถานะออเดอร์ · Realtime", "title": "บอท LINE เช็คสถานะออเดอร์ และหน้า LIFF ไทม์ไลน์แบบเรียลไทม์", "summary": "ทำให้ลูกค้าเช็คสถานะออเดอร์ในไลน์ได้ พิมพ์ขอเช็ค ใส่เบอร์ แล้วได้การ์ดออเดอร์ กดเปิดหน้าไทม์ไลน์ที่อัปเดตเองแบบเรียลไทม์", "details": ["webhook LINE: พิมพ์ \"เช็คสถานะออเดอร์\" → ขอเบอร์ → ส่ง Flex Message สไตล์บัตรกำนัลแดง-ขาว", "หน้า status.html เปิดเป็น LIFF popup ในไลน์ แสดงไทม์ไลน์สถานะ", "เปิด Supabase Realtime ให้สถานะอัปเดตเองไม่ต้องรีเฟรช", "รูปแบบเลขออเดอร์ลูกค้าประจำ เช่น C046-4321-290526", "แก้เวลา UTC เป็นเวลาไทย", "sync ขึ้น Supabase หลังแอดมินบันทึก", "เขียนคู่มือ SETUP_LIFF, SETUP_REALTIME และ HANDOFF_BOT_ADMIN", "จดแผนแก้ต่อใน implementation_plan.md (โลโก้กลม ไอคอนบอท การขอสิทธิ์ตำแหน่ง)", "ไฟล์งานเซฟช่วง 09:17–15:22 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-30", "project": "pet-store", "type": "shop", "cat": "write", "category": "บอทแอดมิน · สถานะออเดอร์ · Apps Script", "title": "วางระบบบอทแอดมิน และปรับหน้าสถานะออเดอร์", "summary": "อัปเดตแผนบอทแอดมินให้ตั้งคำตอบบอทเองจากหลังบ้านได้ ปรับไทม์ไลน์ออเดอร์ แก้ webhook กับหน้าสถานะหลายรอบ และทดสอบกับระบบจริง", "details": ["อัปเดต HANDOFF_BOT_ADMIN: ตาราง bot_rules ให้แอดมินตั้ง keyword/คำตอบบอทเอง และปรับขั้นไทม์ไลน์ออเดอร์", "แก้ webhook.js และ status.html หลายรอบ", "เพิ่มโลโก้แบบเต็ม LOGOFULL", "อัปเดต CODE.gs", "สคริปต์ test_live.js ทดสอบกับระบบจริง", "ไฟล์งานเซฟช่วง 09:31–17:55 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-31", "project": "pet-store", "type": "shop", "cat": "angry", "category": "ยกเลิกออเดอร์ · การ์ด UI · สถานะชำระเงิน", "title": "ให้ลูกค้ายกเลิกออเดอร์เองได้ ปรับการ์ดสถานะ และเพิ่มสถานะการชำระเงิน", "summary": "เพิ่มการยกเลิกออเดอร์จากฝั่งลูกค้าและแก้การแจ้งเตือนตอนยกเลิก ปรับ UI แบบการ์ด เพิ่มเลขออเดอร์ลูกค้าทั่วไป สรุปยอดลงชีต และตอนเย็นเพิ่มสถานะการชำระเงินกับหน้าตั้งค่าบอทในหลังบ้าน", "details": ["ลูกค้ายกเลิกออเดอร์เองได้ และแก้การแจ้งเตือนตอนยกเลิก (สำรองไฟล์ก่อนแก้ 4 รอบ)", "ปรับ UI แบบการ์ดใน index, status และ webhook", "เลขออเดอร์ลูกค้าทั่วไปตามวันที่", "สรุปยอดลงชีต Dashboard ใน Apps Script", "เพิ่มสถานะการชำระเงิน แยกออเดอร์จ่ายทีหลัง", "หน้าตั้งค่าบอทและพรีวิวไทม์ไลน์ในหลังบ้าน อัปโหลดโลโก้หน้าสถานะได้", "ไฟล์งานเซฟช่วง 08:38–17:33 น."], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)"},
+  {"date": "2026-05-11", "project": "pet-store", "type": "shop", "cat": "write", "category": "ดราฟ UI · หน้าร้าน · ธีมสี", "title": "เริ่มงาน: ดราฟ UI เว็บร้านส่ง", "summary": "วันแรก ดราฟหน้าตาเว็บแคตตาล็อกร้านส่ง วางโครงหน้าร้าน แถบเมนู หมวดสินค้า และการ์ดสินค้า พร้อมวางระบบสีด้วย CSS variables ให้เปลี่ยนธีมได้จากที่เดียว", "details": ["วางโครงหน้าร้าน: navbar, ส่วนหมวดสินค้า, การ์ดสินค้า", "ออกแบบการ์ดสินค้ากรอบชั้นเดียว ขอบมน มีรูป ชื่อ ราคา สต็อก", "วางตัวแปรสี (CSS variables) เป็น UI engine ของทั้งเว็บ", "ใช้ข้อมูลจำลอง (mock data) ระหว่างดราฟ"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-12", "project": "pet-store", "type": "shop", "cat": "butterfly", "category": "ป๊อปอัปสินค้า · ค้นหา · เมนูหมวด", "title": "ป๊อปอัปสินค้า เลือกขนาด ค้นหา และเมนูหมวด", "summary": "ต่อจากโครงหน้าร้าน ทำป๊อปอัปรายละเอียดสินค้า เลือกขนาดและจำนวน แถบค้นหา และเมนูกระโดดไปแต่ละหมวด", "details": ["ป๊อปอัปสินค้า เลือกขนาด และปุ่มเพิ่ม/ลดจำนวน", "แถบค้นหาสินค้า", "เมนูหมวดหมู่ กดแล้วเลื่อนไปหมวดนั้น", "ไอคอน SVG ชุดของเว็บ (ตะกร้า บ้าน ธนาคาร QR แผนที่ ฯลฯ)"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-14", "project": "pet-store", "type": "shop", "cat": "heart", "category": "ตะกร้า · Checkout · แผนที่ · สลิป", "title": "ตะกร้าสินค้าและหน้าชำระเงิน", "summary": "ทำตะกร้าและหน้าชำระเงิน กรอกชื่อ เบอร์ ที่อยู่ ปักหมุดตำแหน่งบนแผนที่ เลือกโอน สแกน QR หรือเก็บเงินปลายทาง และแนบสลิป", "details": ["ตะกร้าสินค้า ตัวนับบนไอคอน แก้จำนวน/ลบรายการ", "ฟอร์มที่อยู่จัดส่ง + แผนที่ Longdo ปักหมุดและแปลงพิกัดเป็นที่อยู่", "เลือกวิธีชำระ: โอน / QR / ปลายทาง พร้อมคัดลอกเลขบัญชี", "แนบสลิปก่อนส่งคำสั่งซื้อ"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-15", "project": "pet-store", "type": "shop", "cat": "wave", "category": "Apps Script · Google Sheet · ออเดอร์", "title": "เชื่อม Google Apps Script และ Google Sheet", "summary": "ต่อหน้าร้านเข้ากับหลังบ้านจริง โหลดสินค้าจาก Google Sheet ผ่าน Apps Script และส่งออเดอร์ลงชีต มีคิวส่งคำขอและกันสั่งเกินสต็อก", "details": ["โหลดแคตตาล็อกจาก Google Sheet ผ่าน Apps Script", "คิวส่งคำขอ (queue) กันยิงซ้ำ", "ส่งออเดอร์ลงชีตพร้อมเลขออเดอร์", "กันใส่ตะกร้าเกินสต็อก และแจ้งเตือนเมื่อสต็อกไม่พอ"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-16", "project": "pet-store", "type": "shop", "cat": "write", "category": "หลังบ้านแอดมิน · สินค้า · รูป", "title": "ระบบหลังบ้านแอดมิน จัดการหมวดและสินค้า", "summary": "ทำหลังบ้านให้ร้านจัดการเองได้ ล็อกอินด้วยรหัสแอดมิน เพิ่ม/แก้หมวด สินค้า ขนาด ราคา สต็อก อัปโหลดรูป และลากเรียงสินค้า", "details": ["หน้าใส่รหัสแอดมิน และหน้าต่างแอดมินหลักแบบแท็บ", "จัดการหมวด: เพิ่ม ลบ เปลี่ยนชื่อ เรียงลำดับ", "จัดการสินค้า: ขนาด ราคา สต็อก คำอธิบาย คัดลอกสินค้า", "อัปโหลดรูปสินค้าและโลโก้", "ลากเรียงสินค้าในหมวด"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-19", "project": "pet-store", "type": "shop", "cat": "run", "category": "Supabase · สต็อกเรียลไทม์", "title": "ต่อหน้าเว็บเข้ากับ Supabase แบบมีสวิตช์ถอยกลับ", "summary": "หลังวางฐานข้อมูลเมื่อวันก่อน ต่อหน้าเว็บให้โหลดแคตตาล็อกและส่งออเดอร์ผ่าน Supabase ได้ โดยยังถอยกลับไปใช้ Apps Script ได้ และ sync สต็อกแบบใกล้เรียลไทม์", "details": ["โหลดแคตตาล็อกจาก Supabase / ส่งออเดอร์ผ่าน Edge Function", "สวิตช์เปิดปิด Supabase ถอยกลับ Apps Script ได้", "ดึงสต็อกเป็นระยะทั้งจาก Sheet และ Supabase", "ซิงก์แคตตาล็อกจากหลังบ้านขึ้น Supabase"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-20", "project": "pet-store", "type": "shop", "cat": "angry", "category": "แอดมินหลายคน · ล็อก · Autosave", "title": "ระบบแอดมินหลายคน ล็อกหมวดกันแก้ชน", "summary": "ทำให้แอดมินหลายคนทำงานพร้อมกันได้ ใครเปิดหมวดไหนอยู่ หมวดนั้นจะถูกล็อกไว้ชั่วคราว พร้อมบันทึกร่างอัตโนมัติกันงานหาย", "details": ["ล็อกหมวดต่อแอดมิน มีอายุล็อก (TTL) และ heartbeat", "แสดงว่าแอดมินคนอื่นกำลังแก้หมวดไหน", "บันทึกร่างอัตโนมัติ และกู้ร่างเมื่อกลับเข้ามา", "กู้ session แอดมินเมื่อหลุด"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-21", "project": "pet-store", "type": "shop", "cat": "write", "category": "แดชบอร์ด · ออเดอร์ · สลิป", "title": "แดชบอร์ดยอดขายและหน้าจัดการออเดอร์", "summary": "ทำแดชบอร์ดสรุปยอดและหน้าออเดอร์ในหลังบ้าน ดูรายละเอียด เปลี่ยนสถานะ ดูสลิป และเคลียร์ออเดอร์ที่จัดการแล้ว", "details": ["แดชบอร์ดสรุปยอดพร้อมกราฟ และรีเฟรชอัตโนมัติ", "รายการออเดอร์ ค้นหา กรองตามสถานะ", "เปลี่ยนสถานะออเดอร์ ยกเลิก และเคลียร์ออเดอร์", "เปิดดูสลิปแบบขยาย และส่งออกข้อมูลออเดอร์"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-22", "project": "pet-store", "type": "shop", "cat": "run", "category": "หน้าโหลด · โปรโมชัน · Skeleton", "title": "หน้าโหลดโลโก้และภาพโปรโมชันตอนเปิดแอป", "summary": "ทำหน้าโหลดตอนเปิดเว็บ โชว์โลโก้แล้วเฟดเข้าภาพโปร แยกชุดภาพมือถือกับคอม ตั้งเวลาแต่ละภาพได้ และมีโครงโหลดระหว่างรอสินค้า", "details": ["splash โลโก้ → ภาพโปรแบบ crossfade", "แยกภาพโปรแนวตั้งมือถือ / แนวนอนคอม-ไอแพด", "ตั้งเวลาโชว์ภาพโปร และแตะปิดได้", "จำรูปไว้ในเครื่องให้รอบหน้าเปิดเร็วขึ้น", "skeleton ระหว่างโหลดสินค้า"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-05-23", "project": "pet-store", "type": "shop", "cat": "butterfly", "category": "ตั้งค่าธีม · ธนาคาร/QR · Responsive", "title": "หน้าตั้งค่าธีม ธนาคาร/QR ในหลังบ้าน และปรับ responsive", "summary": "ทำหน้าตั้งค่าในหลังบ้าน ให้ร้านเปลี่ยนแม่แบบ สี โซนสี และรูปทรงการ์ดได้เอง จัดการบัญชีธนาคารกับ QR และปรับหลังบ้านให้ใช้ได้บนแท็บเล็ตและมือถือ", "details": ["เลือกแม่แบบ ปรับสีด้วยสวอตช์และสไลเดอร์ แยกโซนสี", "ตรวจสีตัวอักษรให้อ่านออกบนพื้นสีที่เลือก", "จัดการบัญชีธนาคารและ QR จากหลังบ้าน", "แปลงรูป Base64 เป็น URL ก่อนบันทึก", "ปรับ layout หลังบ้านสำหรับแท็บเล็ต/มือถือ"], "time": "08:00–17:00 น. · เวลาทำงานปกติ (ประมาณ)", "recon": "เรียบเรียงย้อนหลังจากโค้ด"},
+  {"date": "2026-10-05", "project": "pet-store", "type": "web", "cat": "write", "category": "Staff · ตั้งค่าร้าน · ลูกค้า · สิทธิ์แอดมิน", "title": "รวมการตั้งค่าทั้งหมดเข้าหน้า Staff และเก็บโค้ดขึ้น GitHub", "summary": "วันแรก ซิงก์ไฟล์ใน GitHub ให้ตรงกับเว็บจริงและสำรอง Apps Script แล้วย้ายการตั้งค่าจากหลังบ้านเดิม (กดโลโก้ 3 ครั้ง) มาไว้ที่หน้า Staff ทั้งรูปภาพร้าน การชำระเงิน เปิด/ปิดร้าน ธีม บิล LINE แชตบอต และรายชื่อลูกค้า พร้อมแยกสิทธิ์แอดมินแต่ละร้าน", "details": ["ซิงก์ไฟล์ใน GitHub ให้ตรงกับเว็บจริง และเก็บสำเนา CODE.gs ไว้ส่งมอบร้าน", "Staff › ตั้งค่า › รูปภาพร้าน: โลโก้ หน้าโหลด ป๊อปอัปโปร แยกตามร้าน", "ตั้งค่าการชำระเงิน (บัญชี/QR) และสวิตช์ปิดรับออเดอร์ชั่วคราว", "ตั้งสีหลักร้าน สีบิล LINE สีสถานะ 5 สี พร้อมพรีวิวบิลและไทม์ไลน์", "ย้ายแชตบอต LINE OA มาตั้งที่ Staff และปิดหลังบ้านเดิมที่หน้าร้าน", "ย้ายฟอร์มที่อยู่จัดส่งไปหน้าที่อยู่แยก", "แก้ไข/ลบรายชื่อลูกค้า (ลบได้เฉพาะแอดมินสูงสุด) ซิงก์กับชีตลูกค้า", "สิทธิ์ตั้งค่าแยกร้าน แอดมินร้านแก้ได้เฉพาะร้านตัวเอง", "ไฟล์งานเซฟช่วง 09:26–12:33 น."], "time": "08:24–19:30 น. · เข้าสาย 24 นาที · อยู่ต่อเผื่อเวลาไปมหาลัย"},
+  {"date": "2026-10-08", "project": "cat-hotel", "type": "hotel", "also": ["kodang"], "cat": "run", "category": "ป้ายราคา · Android · ช่องทางจอง · รูปห้อง", "title": "เครื่องพิมพ์ป้ายราคาร้าน และแก้บั๊ก/เพิ่มฟีเจอร์ระบบจองโรงแรมแมว", "summary": "เช้าทำหน้าพิมพ์ป้ายราคาสินค้าใน Staff ของร้าน บ่ายย้ายมาระบบโรงแรมแมว แก้หน้าโหลดค้างบน Android เพิ่มลบการจองรายตัว แยกช่องทางจอง และให้แอดมินเปลี่ยนรูปประเภทห้องเองได้", "details": ["[ร้าน] หน้าพิมพ์ป้ายราคา: ค้นหา เลือกสินค้า กำหนดจำนวนป้าย นำเข้า Excel", "[ร้าน] โปรบนป้าย: ส่วนลด % / บาท / ราคาพิเศษ ตรวจไม่ให้เกินราคาปกติ ปรับสีและขนาดตัวอักษรรายสินค้า", "[ร้าน] หน่วยขนาดสินค้า (กก. มล. ฯลฯ) เพิ่มเองได้", "[โรงแรมแมว] หน้าโหลดค้างบน Samsung: ปิดหน้าโหลดเร็วขึ้น จำกัดเวลารอธีมและ LINE SDK", "[โรงแรมแมว] ลบการจองรายตัวจากหน้าเช็กอินในโหมดช่าง", "[โรงแรมแมว] แยกช่องทางจอง LINE OA / แอดมินจองให้ / เว็บ และไม่ส่งบิล LINE เมื่อแอดมินจองให้", "[โรงแรมแมว] รูปห้องคอนโด/วิลล่า อัปโหลดจากหลังบ้าน แปลงเป็น WebP", "[โรงแรมแมว] แก้บั๊กอัปโหลดรูปครั้งแรก (สร้างคลังรูป room-photos)", "ไฟล์งานเซฟช่วง 09:08–17:50 น."], "time": "08:06–18:04 น. · เข้าสาย 6 นาที"},
+  {"date": "2026-10-09", "project": "cat-hotel", "type": "hotel", "also": ["web"], "cat": "write", "category": "Android · ใบพิมพ์ 80 มม. · หลายห้อง · ล็อกอิน Staff", "title": "แก้อัปโหลดรูปบน Android ใบพิมพ์ 80 มม. ใบข้อมูลน้อง และจองหลายห้อง", "summary": "ทั้งวันอยู่กับระบบโรงแรมแมว แก้ปุ่มอัปโหลดรูปแมว/สลิปบน Android จัดใบเสร็จ 80 มม. ไม่ให้ตกขอบ ทำใบข้อมูลน้องติดหน้าห้อง และให้จองหลายห้องได้ ช่วงบ่ายแวะปรับหน้าล็อกอิน Staff และการพิมพ์แคตตาล็อกของร้าน", "details": ["[โรงแรมแมว] Android อัปโหลดรูปแมว/สลิป: ใช้ input ไฟล์จริง รองรับไฟล์ที่ไม่มี MIME จำกัดเวลาอ่านภาพ", "[โรงแรมแมว] ใบเสร็จ 80 มม. ตกขอบขวา → จัดเนื้อหากว้าง 69 มม.", "[โรงแรมแมว] ใบข้อมูลน้องติดหน้าห้อง 80 มม. ปุ่มพิมพ์คู่ใบเสร็จ", "[โรงแรมแมว] ลูกค้าและแอดมินจองได้หลายห้องต่อการจอง", "[ร้าน] หน้าล็อกอิน Staff เป็นดรอปดาวน์รายชื่อแอดมิน จำในเครื่อง โหลด LIFF เร็วขึ้น", "[ร้าน] พิมพ์แคตตาล็อก: ตัดขอบขาวรอบรูปสินค้าให้รูปเต็มการ์ด", "ไฟล์งานเซฟช่วง 08:45–17:20 น."], "time": "08:05–18:06 น. · ประมาณ"},
+  {"date": "2026-10-11", "project": "cat-hotel", "type": "hotel", "also": ["web"], "cat": "angry", "category": "ห้องพัก · เช็กเอาท์ · ค้นหา · บอทแยกร้าน", "title": "แก้ห้องที่ปิดใช้งาน ลำดับเลขห้อง ค้นหาการจอง เพิ่มเช็กเอาท์ และสวิตช์บอทแยกร้าน", "summary": "แก้บั๊กห้องที่ปิดใช้งานหายและเลขห้องเรียงผิดในระบบโรงแรมแมว เพิ่มปุ่มเช็กเอาท์ ทำช่องค้นหาให้ใช้ง่าย และฝั่งร้านเพิ่มสวิตช์เปิด/ปิดบอทตอบกลับแยกร้าน", "details": ["[โรงแรมแมว] ห้องที่ปิดใช้งานกลับมาอยู่ในกล่อง \"ปิดใช้งาน\"", "[โรงแรมแมว] เรียงห้องตามเลขท้ายรหัส (แก้ลำดับ 1 9 2)", "[โรงแรมแมว] API เช็กเอาท์ + ปุ่มเช็กเอาท์หน้าภาพรวม ห้องว่างทันที", "[โรงแรมแมว] ช่องค้นหารายการจองกว้างขึ้น ค้นเบอร์มี/ไม่มีขีด ชื่อห้อง หลายคำ", "[ร้าน] สวิตช์เปิด/ปิดบอทตอบกลับแยกร้านจากหน้า Staff", "ไฟล์งานเซฟช่วง 08:19–11:36 น."], "time": "08:07–18:08 น. · ประมาณ"},
+  {"date": "2026-10-12", "project": "cat-hotel", "type": "hotel", "also": ["web"], "cat": "write", "category": "ตรวจระบบ · ภาพรวมวันนี้ · LINE · กฎรับออเดอร์", "title": "ตรวจระบบหลังบ้านโรงแรมแมว ภาพตอบค่าบริการใน LINE และกฎรับออเดอร์ฝั่งเซิร์ฟเวอร์ของร้าน", "summary": "เช้าทำกฎรับออเดอร์ฝั่งเซิร์ฟเวอร์ของร้าน (ปิดปรับปรุงและยอดขั้นต่ำ) แล้วไปตรวจระบบหลังบ้านโรงแรมแมวทั้งชุด ให้ภาพรวมวันนี้กดดูรายชื่อได้ และทำภาพตอบค่าบริการในแชต LINE", "details": ["[ร้าน] ตรวจฝั่งเซิร์ฟเวอร์ (Edge Function + Apps Script): ปิดปรับปรุงรับออเดอร์เฉพาะแอดมิน ยอดขั้นต่ำคิดจากราคาจริง", "[ร้าน] หน้าร้านแจ้งชัดเมื่อเซิร์ฟเวอร์ปฏิเสธออเดอร์", "[โรงแรมแมว] ตรวจระบบหลังบ้านทั้งชุด เขียนรายงาน 18_STAFF_OVERVIEW_AUDIT", "[โรงแรมแมว] ภาพรวมวันนี้กดดูรายชื่อได้ทุกหมวด", "[โรงแรมแมว] ภาพตอบค่าบริการ/บริการในแชต LINE", "ไฟล์งานเซฟช่วง 10:28–14:35 น."], "time": "08:04–18:03 น. · ประมาณ"},
+  {"date": "2026-10-06", "project": "pet-store", "type": "shop", "cat": "write", "category": "ปริ้นแคตตาล็อก · Staff", "title": "ระบบปริ้นแคตตาล็อกสินค้าของร้าน", "summary": "ทำระบบปริ้นแคตตาล็อกสินค้าในหน้า Staff ต่อ (เริ่มไว้ตั้งแต่ 4 ต.ค.) ให้ร้านส่งและร้านปลีกพิมพ์แคตตาล็อกจากรายการสินค้าในระบบได้เอง", "details": ["ต่องานระบบปริ้นแคตตาล็อกที่เริ่มไว้ตั้งแต่ 4 ต.ค.", "ดึงรายการสินค้า รูป ขนาด และราคาจากระบบมาจัดหน้าแคตตาล็อก", "แยกตามร้านส่ง / ร้านปลีก", "ภายหลังปรับต่อวันที่ 9 ต.ค. (ตัดขอบขาวรูปให้เต็มการ์ด)"], "time": "08:20–18:05 น. · เข้าสาย 20 นาที", "recon": "จากที่โบ๊ทเล่า · วันที่ทำอาจคลาดเล็กน้อย"},
+  {"date": "2026-10-07", "project": "pet-store", "type": "shop", "also": ["hotel"], "cat": "butterfly", "category": "ปลั๊กอินสร้างภาพ · ธีมร้าน · รูปห้องพัก", "title": "เริ่มปลั๊กอินสร้างภาพโปรสำหรับร้านส่ง/ร้านปลีก ให้คงธีมร้าน", "summary": "เริ่มทำปลั๊กอินสร้างภาพโปรโมชันเฉพาะร้านส่งหรือร้านปลีก ให้ภาพออกมาคงธีมร้านทุกครั้ง และใช้สร้างภาพประเภทห้องของโรงแรมแมวที่เอาไปทดสอบอัปโหลดวันที่ 8", "details": ["ปลั๊กอินสร้างภาพโปรจากรูปสินค้า แยกโหมดร้านส่ง / ร้านปลีก", "กำหนดสไตล์ธีมร้าน ภาพอ้างอิง และโลโก้ร้านจริง ให้ภาพออกมาเป็นแนวเดียวกัน", "สร้างภาพตัวอย่างประเภทห้องโรงแรมแมว (ไฟล์ภาพลงเวลา 7 ต.ค. 10:36 ใช้ทดสอบอัปโหลดวันที่ 8)"], "time": "08:07–15:30 น. · ครึ่งวัน กลับไปสอบ", "recon": "จากที่โบ๊ทเล่า · วันที่ทำอาจคลาดเล็กน้อย"},
+  {"date": "2026-10-10", "project": "pet-store", "type": "shop", "cat": "angry", "category": "ปลั๊กอินสร้างภาพ · แก้ซ้ำ", "title": "แก้ปลั๊กอินสร้างภาพร้านซ้ำหลายรอบ", "summary": "ลองสร้างภาพจริงแล้วแก้ปลั๊กอินไปมาหลายรอบ ให้ภาพร้านส่งและร้านปลีกออกมาตรงธีม สินค้าไม่เพี้ยน และใช้งานง่ายสำหรับพนักงาน", "details": ["ทดลองสร้างภาพจากรูปสินค้าจริงทั้งสองร้าน", "แก้สไตล์ให้คงธีมร้าน และให้สินค้าในภาพตรงกับของจริง", "ปรับขั้นตอนถามข้อมูลก่อนสร้างภาพให้พนักงานใช้ง่าย", "แก้แล้วทดสอบซ้ำหลายรอบ"], "time": "08:03–18:02 น. · ประมาณ", "recon": "จากที่โบ๊ทเล่า · วันที่ทำอาจคลาดเล็กน้อย"},
+  {"date": "2026-10-13", "project": "pet-store", "type": "shop", "also": ["hotel"], "cat": "run", "category": "ปลั๊กอินพรอมต์ · คลิป 10 วิ · Flow · คลิปโปรโมท", "title": "ปลั๊กอินสร้างพรอมต์คลิป 10 วินาทีบน Flow และคลิปโปรโมทโรงแรมแมว", "summary": "ทำปลั๊กอินสร้างพรอมต์วิดีโอไว้เจนคลิปโฆษณาสั้น 10 วินาทีบน Flow ให้คงธีมร้าน และทำคลิปโปรโมทโรงแรมแมว", "details": ["[ร้าน] ปลั๊กอินสร้างพรอมต์คลิป 10 วินาทีสำหรับ Flow", "[ร้าน] วางโครงพรอมต์: ฉาก การเคลื่อนกล้อง จังหวะ และข้อความโปร", "[ร้าน] คุมธีมร้านส่ง/ร้านปลีกให้ตรงกับภาพนิ่ง แล้วทดลองเจนคลิปปรับพรอมต์", "[โรงแรมแมว] ทำคลิปโปรโมทโรงแรมแมว"], "time": "08:02–18:07 น. · ประมาณ", "recon": "จากที่โบ๊ทเล่า · วันที่ทำอาจคลาดเล็กน้อย"},
+  {"date": "2026-10-14", "project": "cat-hotel", "type": "hotel", "cat": "heart", "category": "ใบพิมพ์ · แจ้งเตือนจอง · LINE · การเงิน", "title": "ใบพิมพ์ แจ้งเตือนจองใหม่ การเงิน และทำคู่มือ + คลิปสอนใช้งานระบบ", "summary": "วันสุดท้าย แก้ใบพิมพ์ 80 มม. จากใบจริงที่ร้าน ทำน้องแมวแจ้งเตือนเมื่อมีการจองใหม่ ปรับหน้าจองใน LINE เพิ่มมุมมองวัน ปฏิทินห้อง และการเงินในหลังบ้าน แล้วทำคู่มือใช้งานระบบกับคลิปสอนใช้งานไว้ส่งต่อให้ร้าน", "details": ["ใบพิมพ์ 80 มม. ไม่มีวันที่/URL ที่หัวท้าย และสั้นลง", "แจ้งเตือนจองใหม่: น้องแมวมุมซ้ายล่าง เสียงเมี้ยว เขย่าป้าย กะพริบตา กระดิกหู", "หน้าจองใน LINE: นับถอยหลังโอน 30 นาที ยอดล็อกใน QR หน้าจอระหว่างส่ง", "หลังบ้าน: เลือกดูวันอื่น ปฏิทินห้อง 14 คืน สรุปเงิน เรื่องที่ต้องตาม", "การเงิน: ยอดตามวัน/สัปดาห์ เริ่มนับยอดใหม่ ระบบปิดยอด (ซ่อนไว้)", "งานวันนี้ยังไม่ deploy", "ทำคู่มือใช้งานระบบ (จากที่โบ๊ทเล่า)", "ทำคลิปสอนใช้งานระบบ (จากที่โบ๊ทเล่า)", "ไฟล์งานเซฟตั้งแต่ 08:54 น."], "time": "08:06–18:05 น. · ประมาณ"},
 ];
 let state={tasks:[],theme:'dusty',sound:true,profile:{name:'',cat:'wave'},projColors:{},logEdits:{},logAdds:[],projects:{},hiddenProjects:[],deletedLogKeys:[]};
 let editing=null, saveTimer=null, cheerTimer=null, cheering=false;
@@ -1067,11 +1390,28 @@ function logMatch(e){
   if(!q)return true;
   return (e.title+' '+e.summary+' '+e.category+' '+e.details.join(' ')).toLowerCase().includes(q);
 }
+function logCatKey(e){
+  if(e.project!=='cat-hotel')return '';
+  if(e.cat&&CAT[e.cat])return e.cat;
+  const text=[e.category,e.title,e.summary,(e.details||[]).join(' ')].join(' ').toLowerCase();
+  const rules=[
+    ['angry',['ความปลอดภัย','security','ป้องกัน','ปิดสิทธิ์','จองซ้อน']],
+    ['heart',['ชำระเงิน','มัดจำ','ใบเสร็จ','ราคา','ส่วนลด']],
+    ['butterfly',['รูปภาพ','webp','ภาษา','ฟอนต์','ออกแบบ','mobile ui']],
+    ['run',['หน้าโหลด','ความเร็ว','performance','production']],
+    ['write',['staff dashboard','หลังบ้าน','แอดมิน','migration','จัดการ']],
+    ['sleep',['ห้องพัก','ค้างคืน','เช็กอิน','โรงแรม']],
+    ['wave',['ลูกค้า','line','จอง']],
+  ];
+  for(const [cat,words] of rules)if(words.some(word=>text.includes(word)))return cat;
+  return 'nap';
+}
 function logHTML(e,o){
   o=o||{};
   const caret=o.caret!==false, share=o.share!==false, full=o.open||openLog===(e.key||e.date);
   const w=logDay(e), pj=allProjects()[e.project], c=pcol(e.project), id=e.key||e.date;
   const cats=String(e.category||'').split('·').map(c2=>c2.trim()).filter(Boolean).map(c2=>`<span class="pill">${esc(c2)}</span>`).join('');
+  const catKey=logCatKey(e);
   return `<article class="log ${full?'open':''}" data-log="${id}">
     <button class="head" data-toggle="${id}">
       <span class="when" style="background:${c}22;color:${c}"><b>${esc(w.d)}</b><span>${esc(w.m)}</span></span>
@@ -1080,6 +1420,7 @@ function logHTML(e,o){
         <p>${esc(e.summary)}</p>
         <span class="meta"><span class="pill" style="background:${c}22;color:${c}">${esc(pj?pj.name:e.project)}</span>${cats}${e.time?`<span class="pill time">${esc(e.time)}</span>`:''}</span>
       </span>
+      ${catKey?`<img class="log-cat" data-cat="${esc(catKey)}" alt="" aria-hidden="true">`:''}
       ${caret?'<svg class="caret" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>':''}
     </button>
     <div class="more">
@@ -1091,19 +1432,7 @@ function logHTML(e,o){
     </div>
   </article>`;
 }
-function renderLogs(){
-  const all=effLogs();
-  const rows=all.filter(logMatch).sort((a,b)=>logState.order==='desc'?b.date.localeCompare(a.date):a.date.localeCompare(b.date));
-  $('#logs').innerHTML=rows.length?rows.map(e=>logHTML(e)).join('')
-    :`<div class="empty"><img data-cat="sad" alt=""><p>ไม่พบบันทึกที่ตรงกับที่ค้นหา</p></div>`;
-  $('#logs').querySelectorAll('[data-cat]').forEach(el=>{el.src=CAT[el.dataset.cat];});
-  $('#log-sub').textContent=`พบ ${rows.length} บันทึก จากทั้งหมด ${all.length}`;
-  $('#share-what').textContent=logState.proj==='all'?'ทุกโปรเจกต์':allProjects()[logState.proj].name;
-  const projects=allProjects();
-  $('#proj-tabs').innerHTML=[{id:'all',name:'ทุกโปรเจกต์'}].concat(Object.keys(projects).map(k=>({id:k,name:projects[k].name})))
-    .map(p=>`<button class="tab ${p.id===logState.proj?'on':''}" data-proj="${p.id}">${esc(p.name)}<i>${p.id==='all'?all.length:all.filter(x=>x.project===p.id).length}</i></button>`).join('');
-  buildMonths(all);
-}
+function renderLogs(){csRender();}
 function buildMonths(all){
   const cur=logState.month;
   const ms=[...new Set(all.map(e=>e.date.slice(0,7)))].sort().reverse();
@@ -1145,18 +1474,6 @@ function shareLink(url,title){
   if(navigator.share){navigator.share({title,url}).catch(()=>{});}
   else{navigator.clipboard.writeText(url).then(()=>toast('คัดลอกลิงก์แล้ว')).catch(()=>toast('คัดลอกลิงก์ไม่สำเร็จ',true));}
 }
-$('#log-share').onclick=()=>{
-  buzz(12,'pop');play($('#log-share'),'tap',420);
-  const name=logState.proj==='all'?'ทุกโปรเจกต์':allProjects()[logState.proj].name;
-  shareLink(location.origin+location.pathname+'#p='+encodeURIComponent(logState.proj),'MENOTE · '+name);
-};
-$('#log-q').addEventListener('input',e=>{logState.q=e.target.value;renderLogs();});
-$('#log-month').addEventListener('change',e=>{logState.month=e.target.value;renderLogs();});
-$('#log-sort').onclick=()=>{
-  logState.order=logState.order==='desc'?'asc':'desc';
-  $('#log-sort').textContent=logState.order==='desc'?'ใหม่ → เก่า':'เก่า → ใหม่';
-  buzz(8,'tap');renderLogs();
-};
 function renderPCol(){
   const projects=allProjects();
   $('#pcol').innerHTML=Object.keys(projects).map(k=>`<div class="nm">${esc(projects[k].name)}</div>
@@ -1228,6 +1545,7 @@ function openLSheet(key){
   const projects=allProjects();
   const picked=e?e.project:(logState.proj!=='all'?logState.proj:Object.keys(projects)[0]);
   renderProjectOptions(picked);
+  csSetTypes(e?typeOf(e):'web',e?e.also:[]);
   $('#project-create').classList.add('hide');$('#l-new-project').value='';
   const t=parseTimes(e?e.time:''); $('#l-start').value=t[0]; $('#l-end').value=t[1];
   $('#l-details').innerHTML=e?(e.details||[]).map(detRow).join(''):detRow('');
@@ -1242,7 +1560,7 @@ function openLSheet(key){
   if(lnew)setTimeout(()=>$('#l-title').focus(),300);
 }
 function closeLSheet(){$('#scrim').classList.remove('on');$('#lsheet').classList.remove('on');ledit=null;lnew=false;unlockPage();}
-function openNewCompanyLog(){openLSheet(null);}
+function openNewCompanyLog(){if(csC&&$('#cs-case').classList.contains('on'))$('#cs-addlog').click();else openLSheet(null);}
 $('#l-close').onclick=()=>{buzz(8,'tap');closeLSheet();};
 $('#l-cat').addEventListener('keydown',e=>{
   if(e.key==='Enter'||e.key===','){
@@ -1332,7 +1650,7 @@ $('#l-save').onclick=()=>{
   commitCategoryInput();
   const data={
     title, summary:$('#l-summary').value.trim(), category:categoryTags.join(' · '),
-    project:$('#l-project').value, date, details, time
+    project:$('#l-project').value, date, details, time, type:csTypePicked, also:[...csAlsoPicked]
   };
   if(lnew){
     state.logAdds=state.logAdds||[];
@@ -1394,6 +1712,7 @@ async function load(){
   state.projects=state.projects||{};
   state.hiddenProjects=Array.isArray(state.hiddenProjects)?state.hiddenProjects:[];
   state.deletedLogKeys=Array.isArray(state.deletedLogKeys)?state.deletedLogKeys:[];
+  if(!state.caseBook||!Array.isArray(state.caseBook.groups))state.caseBook=csDefault();
   applyTheme();renderProfile();renderSound();render();renderPCol();renderLogs();shareView();
   setTimeout(()=>{const sp=$('#splash');sp.classList.add('gone');setTimeout(()=>sp.remove(),500);},700);
 }
@@ -1569,7 +1888,7 @@ function switchPage(page,animate){
   if(animate)play(go.querySelector('svg'),'popsvg',420);
   window.scrollTo(0,0);
 }
-$('#scrim').onclick=()=>{closeSheet();closeLSheet();closeAddPicker();};
+$('#scrim').onclick=()=>{closeSheet();closeLSheet();closeAddPicker();csCloseSheet();};
 $('#fab').onclick=()=>{
   buzz(12,'pop');play($('#fab'),'tap',460);
   const page=document.body.dataset.page||'overview';
@@ -1641,6 +1960,454 @@ document.addEventListener('touchend',e=>{
   if(now-lastTap<300&&near)e.preventDefault();
   lastTap=now; if(t)lastXY=[t.clientX,t.clientY];
 },{passive:false});
+
+
+/* ================= แฟ้มสำนวน: แผงผนัง + กองเอกสาร ================= */
+const TYPES={
+  web:   {name:'ระบบเว็บ',        c:'#7CA3BE'},
+  kodang:{name:'โกดังเลยสมาร์ท',  c:'#84B29A'},
+  shop:  {name:'ร้านขายส่ง–ปลีก', c:'#D2A177'},
+  hotel: {name:'โรงแรมแมว',       c:'#A698C9'},
+};
+const TYPE_BY_DATE={'2026-06-02':'shop','2026-06-10':'shop','2026-07-08':'shop','2026-07-29':'kodang'};
+const typeOf=e=>TYPES[e.type]?e.type:(e.project==='cat-hotel'?'hotel':TYPE_BY_DATE[e.date]||'web');
+const CS_COLORS=[{fc:'#EADCC6',pin:'#C98F86'},{fc:'#D2E1EB',pin:'#7CA3BE'},{fc:'#DCE8DC',pin:'#84B29A'},{fc:'#E0D9EE',pin:'#A698C9'},{fc:'#F1E6C8',pin:'#C2AE72'},{fc:'#E6E1DA',pin:'#9A8F84'}];
+const CS_MONTH_C='#5E7484', CS_EMPTY_C='#AEBCC4';
+const TH_MF=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const TH_D=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'];
+const CS_DEPTH=4;
+const CS_CLOCK='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+const CS_MARK='<svg viewBox="0 0 24 24"><path d="M7 4h10v16l-5-3.5L7 20z"/></svg>';
+const CS_PEN='<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>';
+const CS_SHARE='<svg viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg>';
+const CS_PLUS='<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
+
+const csE=s=>esc(s==null?'':s);
+const csNum=n=>String(n).replace(/\d/g,d=>'๐๑๒๓๔๕๖๗๘๙'[d]);
+const csToday=()=>localISO();
+function csMins(t){
+  const m=[...String(t||'').matchAll(/(\d{1,2}):(\d{2})/g)].map(x=>+x[1]*60+ +x[2]);
+  let s=0;for(let i=0;i+1<m.length;i+=2){let d=m[i+1]-m[i];if(d<0)d+=1440;s+=d;}
+  return s;
+}
+const csFmtH=m=>{const h=Math.floor(m/60),r=m%60;return h?(r?`${h} ชม. ${r} นาที`:`${h} ชม.`):`${r} นาที`;};
+const csHr=m=>Math.round(m/60);
+const csRange=t=>String(t||'').split('·').map(s=>s.trim()).filter(s=>s&&!/^\d+\s*ชม\.|^\d+\s*นาที/.test(s)).join(' · ');
+function csDay(ds){const d=new Date(ds+'T00:00');return{d:d.getDate(),mi:d.getMonth(),y:(d.getFullYear()+543)%100,m:`${TH_M[d.getMonth()]} ${(d.getFullYear()+543)%100}`,w:TH_D[d.getDay()],wd:d.getDay()};}
+function csSpan(a,b){
+  const x=csDay(a),y=csDay(b);
+  if(x.y===y.y&&x.mi===y.mi)return a===b?`${x.d} ${x.m}`:`${x.d}–${y.d} ${y.m}`;
+  return x.y===y.y?`${x.d} ${TH_M[x.mi]} – ${y.d} ${y.m}`:`${x.d} ${x.m} – ${y.d} ${y.m}`;
+}
+const csPeriod=c=>c.tbd||!c.from||!c.to?'ยังไม่กำหนดวัน':csSpan(c.from,c.to);
+const csCol=c=>CS_COLORS[c.color%CS_COLORS.length]||CS_COLORS[0];
+const csWdLabel=c=>(c.days||[]).length===1?TH_D[c.days[0]]:'วันทำงาน';
+const csOut=l=>l==='วันทำงาน'?'นอกวันทำงาน':'นอกวัน'+l;
+
+function csDefault(){return{groups:[
+  {id:'g-intern',title:'ฝึกงาน',cases:[
+    {id:'observe',title:'ฝึกงานสังเกตการณ์',span:'10 วัน',from:'2026-10-05',to:'2026-10-14',mode:'daily',offCount:0,off:[],st:'08:00',en:'18:00',note:'เวลางาน 08:00–18:00 น. · ระบบร้าน + โรงแรมแมว',color:2},
+    {id:'intern',title:'ฝึกงานใหญ่',span:'4 เดือน',tbd:true,from:'',to:'',mode:'daily',offCount:0,off:[],st:'08:00',en:'18:00',note:'',color:3},
+  ]},
+  {id:'g-shop',title:'งานร้านโกดังเลยสมาร์ท',cases:[
+    {id:'wed',title:'จ้างต่อ · ทำทุกวันพุธ',span:'มิ.ย.–ก.ย.',from:'2026-06-01',to:'2026-09-30',mode:'weekday',days:[3],note:'',color:1},
+    {id:'first',title:'ทำงานช่วงแรก',span:'20 วันทำงาน',from:'2026-05-11',to:'2026-05-31',mode:'daily',offCount:1,off:['2026-05-17'],st:'08:00',en:'17:00',note:'เริ่มจากดราฟ UI เว็บร้านส่ง แล้วค่อยต่อร้านปลีก',color:0},
+  ]},
+]};}
+const csBook=()=>state.caseBook;
+const csAllCases=()=>csBook().groups.flatMap(g=>g.cases.map(c=>Object.assign(c,{_g:g.id})));
+const csFind=id=>csAllCases().find(c=>c.id===id);
+const csIsOpen=c=>typeof c.open==='boolean'?c.open:(!!c.tbd||(c.to||'')>=csToday());
+const csStamp=c=>csIsOpen(c)?(c.tbd?{t:'รอเริ่ม',c:'#9A7FC4'}:{t:'เปิดสำนวน',c:'#4E7791'}):{t:'ปิดสำนวน',c:'#6E9A7E'};
+
+/* ---------- เอกสารในสำนวน ---------- */
+function csDocs(c){
+  if(c.tbd||!c.from||!c.to||c.from>c.to)return[];
+  const logs=effLogs().filter(e=>e.date>=c.from&&e.date<=c.to).map(e=>Object.assign({},e,{type:typeOf(e),min:csMins(e.time)}));
+  const end=new Date(c.to+'T00:00'), out=[], T=csToday();
+  const each=fn=>{for(let d=new Date(c.from+'T00:00');d<=end;d.setDate(d.getDate()+1))fn(localISO(d),d.getDay());};
+  if(c.mode==='weekday'){
+    const days=c.days||[], lbl=csWdLabel(c), slots=[];
+    each((ds,wd)=>{if(days.includes(wd))slots.push(ds);});
+    slots.forEach((ds,i)=>{
+      const es=logs.filter(x=>x.date===ds), tag=`${lbl}ที่ ${i+1}/${slots.length}`;
+      if(es.length)es.forEach(e=>out.push(Object.assign(e,{slot:true,tag})));
+      else out.push({date:ds,empty:true,slot:true,future:ds>T,tag});
+    });
+    logs.filter(e=>!days.includes(csDay(e.date).wd)).forEach(e=>out.push(Object.assign(e,{slot:false,extra:true,tag:csOut(lbl)})));
+  }else if(c.mode==='daily'){
+    let n=0;
+    each(ds=>{
+      n++;
+      const es=logs.filter(x=>x.date===ds), off=(c.off||[]).includes(ds);
+      if(es.length)es.forEach((e,j)=>out.push(Object.assign(e,{slot:true,tag:`วันที่ ${n}`+(es.length>1?` · ${j+1}`:'')})));
+      else if(off)out.push({date:ds,empty:true,off:true,tag:'วันหยุด'});
+      else out.push({date:ds,empty:true,slot:true,future:ds>T,tag:`วันที่ ${n}`});
+    });
+  }else logs.forEach(e=>out.push(Object.assign(e,{tag:`วัน${csDay(e.date).w}`})));
+  return out;
+}
+function csStat(docs,c){
+  const filled=docs.filter(d=>!d.empty), slots=docs.filter(d=>d.slot);
+  const slotF=new Set(slots.filter(d=>!d.empty).map(d=>d.date)).size;
+  let slotT=new Set(slots.map(d=>d.date)).size;
+  const offAdj=c&&c.mode==='daily'?Math.max(0,(c.offCount||0)-(c.off||[]).length):0;
+  slotT=Math.max(slotF,slotT-offAdj);
+  return{filled:filled.length,min:filled.reduce((a,d)=>a+d.min,0),slotF,slotT,
+    missing:Math.max(0,docs.filter(d=>d.empty&&!d.future&&!d.off).length-offAdj),extra:docs.filter(d=>d.extra).length};
+}
+function csItems(c){
+  const docs=csDocs(c).sort((a,b)=>b.date.localeCompare(a.date));
+  const months=[...new Set(docs.map(d=>d.date.slice(0,7)))], items=[];
+  months.forEach((m,k)=>{
+    const g=docs.filter(d=>d.date.startsWith(m)), mi=+m.slice(5)-1, y=(+m.slice(0,4)+543)%100;
+    const dv=Object.assign({kind:'div',label:`${TH_MF[mi]} ${y}`,short:`${TH_M[mi]} ${y}`,docs:g,idx:[],mode:c.mode,wd:csWdLabel(c)},csStat(g,months.length===1?c:null));
+    items.push(dv);
+    g.forEach(d=>{dv.idx.push(items.length);items.push(Object.assign({kind:'doc'},d));});
+  });
+  return items;
+}
+const csColorOf=it=>it.kind==='div'?CS_MONTH_C:it.empty?CS_EMPTY_C:TYPES[it.type].c;
+
+/* ---------- แผงผนัง ---------- */
+function csCaseCard(c,k){
+  const docs=csDocs(c), st=csStat(docs,c), col=csCol(c), stamp=csStamp(c);
+  const filled=docs.filter(d=>!d.empty);
+  const byType=Object.keys(TYPES).map(t=>({t,m:filled.filter(d=>d.type===t).reduce((a,d)=>a+(d.min||60),0)})).filter(x=>x.m);
+  const first=c.tbd?`<span><b>–</b>ยังไม่เริ่ม</span>`:c.mode==='free'?`<span><b>${st.filled}</b>ฉบับ</span>`
+    :`<span><b>${st.slotF}/${st.slotT}</b>${c.mode==='weekday'?csWdLabel(c):'วัน'}</span>`;
+  const ex=c.mode==='weekday'&&st.extra?`<span class="ex">+ ${csOut(csWdLabel(c))} ${st.extra} ฉบับ</span>`:'';
+  const peek=Math.min(3,Math.max(1,Math.ceil(docs.length/7)));
+  return `<button class="cs-case ${csIsOpen(c)?'':'closed'}" data-case="${c.id}" style="--fc:${col.fc};--pin:${col.pin};--rot:${[-2.2,1.8,-1.4,1.2,-.8,2][k%6]}deg;--sc:${stamp.c}">
+    <span class="pin"></span><span class="ftab"></span>
+    ${Array.from({length:peek},(_,i)=>`<span class="peek" style="left:${14+i*6}px;right:${18-i*5}px;transform:rotate(${(i-1)*1.4}deg)"></span>`).join('')}
+    <span class="fbody"><span class="label">
+      <span class="no">สำนวนย่อยที่ ${csNum(k+1)}</span>
+      <h3>${csE(c.title)}</h3>
+      ${c.span?`<span class="span">${csE(c.span)}</span>`:''}
+      <span class="per">${csPeriod(c)}</span>${c.note?`<span class="note">${csE(c.note)}</span>`:''}
+      <span class="cs-cstat">${first}<span><b>${csHr(st.min)}</b>ชม.</span></span>${ex}
+      <span class="tbar ${byType.length?'':'none'}">${byType.map(x=>`<i style="flex:${x.m};background:${TYPES[x.t].c}"></i>`).join('')}</span>
+    </span></span>
+    <span class="stamp">${stamp.t}</span>
+  </button>`;
+}
+function csRenderBoard(){
+  const groups=csBook().groups;
+  $('#cs-groups').innerHTML=groups.map(g=>{
+    const order=g.cases.map((c,i)=>[c,i]).sort((a,b)=>(b[0].tbd?'9':b[0].from||'').localeCompare(a[0].tbd?'9':a[0].from||''));
+    return `<section class="cs-board">
+      <div class="cs-btag"><span>${csE(g.title)}</span><button data-cs-group="${g.id}" aria-label="แก้ไขสำนวนหลัก">${CS_PEN}</button></div>
+      <div class="cs-grid">${order.map(([c,i])=>csCaseCard(c,i)).join('')}
+        <button class="cs-add" data-cs-newcase="${g.id}"><b>+</b>เพิ่มสำนวนย่อย</button></div>
+    </section>`;
+  }).join('')+`<button class="cs-addgroup" data-cs-newgroup>+ สร้างสำนวนหลัก</button>`;
+  const all=effLogs();
+  $('#log-sub').innerHTML=`${groups.length} สำนวนหลัก · ${csAllCases().length} สำนวนย่อย · ${all.length} บันทึก · รวม <b>${csHr(all.reduce((a,e)=>a+csMins(e.time),0))} ชม.</b>`;
+  $('#cs-legend').innerHTML=Object.values(TYPES).map(t=>`<span style="--pc:${t.c}"><i></i>${t.name}</span>`).join('');
+}
+
+/* ---------- เปิดสำนวน ---------- */
+let csC=null, csRows=[], csCur=0, csDrag=false, csShowT=0;
+function csItemHTML(it,i){
+  if(it.kind==='div'){
+    const a=it.docs[it.docs.length-1].date, b=it.docs[0].date;
+    const mix=Object.keys(TYPES).map(t=>({t,m:it.docs.filter(d=>!d.empty&&d.type===t).reduce((s,d)=>s+(d.min||60),0)})).filter(x=>x.m);
+    const sl=it.mode!=='free';
+    return `<article class="cs-f dv" data-i="${i}" style="--pc:${CS_MONTH_C}">
+      <button class="cs-lip" data-fgo="${i}"><span class="ic">${CS_MARK}</span>
+        <span class="mo"><b>${csE(it.label)}</b><small>ที่คั่นเดือน · ${sl?`${it.slotF}/${it.slotT} ${it.mode==='weekday'?it.wd:'วัน'}${it.extra?` +${it.extra}`:''}`:`${it.filled} ฉบับ`}</small></span>
+        <span class="hrs">${CS_CLOCK}${csHr(it.min)} ชม.</span></button>
+      <div class="cs-paper"><div class="cs-body">
+        <div class="cs-dvtop"><div class="tx"><small>ที่คั่นแฟ้ม · งานเดือน</small><h2>${csE(it.label)}</h2></div><img src="${CAT.write}" alt=""></div>
+        <div class="cs-dvstat">
+          <div><b>${sl?`${it.slotF}/${it.slotT}`:it.filled}</b>${sl?(it.mode==='weekday'?`วัน${it.wd}ที่บันทึก`:'วันที่บันทึก'):'ฉบับ'}</div>
+          <div><b>${csHr(it.min)}</b>ชั่วโมง</div>
+          <div><b>${it.mode==='weekday'?it.extra:it.missing}</b>${it.mode==='weekday'?csOut(it.wd):'ยังไม่บันทึก'}</div>
+        </div>
+        ${mix.length?`<div class="cs-mix">${mix.map(x=>`<i style="flex:${x.m};background:${TYPES[x.t].c}"></i>`).join('')}</div>`:''}
+        <p class="cs-sum">${csSpan(a,b)}</p>
+        <ul class="cs-dvlist">${it.docs.map((d,j)=>{const w=csDay(d.date),c=d.empty?CS_EMPTY_C:TYPES[d.type].c;
+          return `<li><button data-fgo="${it.idx[j]}" class="${d.empty?'is-empty':''}" style="--pc:${c}"><span class="n">${w.d}</span>
+            <span class="t">${d.empty?(d.off?'วันหยุด':d.future?'ยังไม่ถึงวัน':'ยังไม่บันทึก'):csE(d.title)}<small>${csE(d.tag)}${d.empty?'':` · ${csE(TYPES[d.type].name)}`}</small></span>
+            <span class="h">${d.min?csFmtH(d.min):''}</span></button></li>`;}).join('')}</ul>
+      </div></div></article>`;
+  }
+  const w=csDay(it.date);
+  if(it.empty){
+    return `<article class="cs-f cs-empty ${it.off?'off':''}" data-i="${i}" style="--pc:${CS_EMPTY_C}">
+      <button class="cs-lip" data-fgo="${i}"><span class="day">${w.d}</span>
+        <span class="mo"><b>${w.m} · ${w.w}</b><small>${it.off?'วันหยุด':`${csE(it.tag)} · ${it.future?'ยังไม่ถึง':'ยังไม่บันทึก'}`}</small></span></button>
+      <div class="cs-paper"><div class="cs-body"><div class="cs-em">
+        <img src="${it.off||it.future?CAT.sleep:CAT.nap}" alt="">
+        <h2>${it.off?'วันหยุด':`${csE(it.tag)} ${it.future?'ยังไม่ถึงวัน':'ยังว่างอยู่'}`}</h2>
+        <p>วัน${w.w}ที่ ${w.d} ${w.m}</p>
+        <div class="cs-acts">
+          <button class="main" data-cs-new="${it.date}">${CS_PLUS}บันทึกงานวันนี้</button>
+          ${csC.mode==='daily'?`<button data-cs-off="${it.date}">${it.off?'ยกเลิกวันหยุด':'ตั้งเป็นวันหยุด'}</button>`:''}
+        </div>
+      </div></div></div></article>`;
+  }
+  const T=TYPES[it.type], pj=allProjects()[it.project], also=(it.also||[]).filter(a=>TYPES[a]&&a!==it.type);
+  const pills=String(it.category||'').split('·').map(s=>s.trim()).filter(Boolean).map(s=>`<span class="cs-pill">${csE(s)}</span>`).join('');
+  const cat=it.cat&&CAT[it.cat]?it.cat:(logCatKey(it)||'nap');
+  return `<article class="cs-f" data-i="${i}" style="--pc:${T.c}">
+    <button class="cs-lip" data-fgo="${i}"><span class="day">${w.d}</span>
+      <span class="mo"><b>${w.m} · ${w.w}</b><small>${csE(it.tag)} · ${csE(T.name)}${also.map(a=>` + ${csE(TYPES[a].name)}`).join('')}</small></span>
+      ${it.min?`<span class="hrs">${CS_CLOCK}${csFmtH(it.min)}</span>`:''}</button>
+    <div class="cs-paper"><div class="cs-body">
+      <div class="cs-ph"><div class="tx"><span class="cs-kind">${csE(T.name)}${also.map(a=>`<em style="--ac:${TYPES[a].c}">${csE(TYPES[a].name)}</em>`).join('')}${pj&&!also.length&&pj.name!==T.name?`<span> · ${csE(pj.name)}</span>`:''}</span>
+        <h2>${csE(it.title)}</h2></div><img src="${CAT[cat]||CAT.nap}" alt="" aria-hidden="true"></div>
+      ${it.recon?`<span class="cs-recon">${csE(it.recon)}</span>`:''}
+      ${it.summary?`<p class="cs-sum">${csE(it.summary)}</p>`:''}
+      ${pills?`<div class="cs-pills">${pills}</div>`:''}
+      ${it.min?`<div class="cs-clock" style="--w:${Math.min(100,it.min/14/60*100)}%"><div><b>${csFmtH(it.min)}</b>${csE(csRange(it.time))}</div><div class="cs-bar"><i></i></div></div>`:''}
+      <ol class="cs-det">${(it.details||[]).map(d=>`<li>${csE(d)}</li>`).join('')}</ol>
+      <div class="cs-acts"><button class="main" data-edit="${csE(it.key)}">${CS_PEN}แก้ไขบันทึก</button><button data-share="${csE(it.key)}" aria-label="แชร์">${CS_SHARE}แชร์</button></div>
+    </div></div></article>`;
+}
+function csLayout(){
+  const n=csRows.length, v=Math.max(0,Math.min(CS_DEPTH,n-1-csCur));
+  const gap=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cs-gap'))||48;
+  document.querySelectorAll('#cs-stack .cs-f').forEach(el=>{
+    const i=+el.dataset.i, k=i-csCur;
+    el.classList.toggle('front',k===0);el.classList.toggle('gone',k<0);el.classList.toggle('far',k>CS_DEPTH);
+    el.style.zIndex=n-i;
+    let y,s,extra='';
+    if(k<0){y=v*gap+120;s=1.02;extra=` rotate(${k%2?-3:2.5}deg)`;}
+    else{const kk=Math.min(k,CS_DEPTH+1);y=(v-kk)*gap;s=1-kk*.055;}
+    el.style.transform=`translateY(${y}px) scale(${s})${extra}`;
+    el.style.filter=k>0?`brightness(${1-k*.02}) saturate(${1-k*.05})`:'none';
+    el.style.height=`calc(100% - ${v*gap}px)`;
+    el.querySelector('.cs-lip').tabIndex=k>0&&k<=CS_DEPTH?0:-1;
+  });
+  const it=csRows[csCur], rail=$('#cs-rail');
+  rail.style.visibility=it?'':'hidden';
+  if(it){
+    if(it.kind==='div')$('#cs-bub').innerHTML=`<b>${csE(it.label)}</b>ที่คั่นเดือน · ${it.filled} ฉบับ`;
+    else{const w=csDay(it.date);$('#cs-bub').innerHTML=`<b>${w.d} ${w.m}</b>${csE(it.tag)}`;}
+    $('#cs-paw').style.setProperty('--pc',csColorOf(it));
+    let sec=-1;for(let j=csCur;j>=0;j--)if(csRows[j].kind==='div'){sec=j;break;}
+    document.querySelectorAll('#cs-tabs [data-fgo]').forEach(b=>b.classList.toggle('on',+b.dataset.fgo===sec));
+  }
+  document.querySelectorAll('#cs-ticks i').forEach(t=>t.classList.toggle('on',+t.dataset.i===csCur));
+  if(!csDrag)$('#cs-paw').style.setProperty('--r',csRatio(csCur));
+  const f=document.querySelector('#cs-stack .cs-f.front .cs-body');if(f)f.scrollTop=0;
+}
+const csRatio=i=>csRows.length>1?i/(csRows.length-1):0;
+function csGo(i){
+  i=Math.max(0,Math.min(csRows.length-1,i));
+  if(i===csCur)return;
+  csCur=i;csLayout();
+  const f=document.querySelector('#cs-stack .cs-f.front');
+  if(f){f.classList.remove('bump');void f.offsetWidth;f.classList.add('bump');}
+  buzz(8);
+}
+const csRowKey=it=>it?(it.kind==='div'?'d:'+it.label:it.empty?'e:'+it.date:'l:'+it.key):'';
+function csRenderCase(keepKey){
+  const c=csC; if(!c)return;
+  const g=csBook().groups.find(x=>x.id===c._g), docs=csDocs(c), st=csStat(docs,c), col=csCol(c);
+  csRows=csItems(c);
+  let k=keepKey?csRows.findIndex(r=>csRowKey(r)===keepKey):-1;
+  if(k<0&&keepKey&&keepKey.startsWith('e:')){const ds=keepKey.slice(2);k=csRows.findIndex(r=>r.kind==='doc'&&r.date===ds);}
+  csCur=k>=0?k:0;
+  $('#cs-no').textContent=g?g.title:'';
+  $('#cs-title').innerHTML=`${csE(c.title)}${c.span?`<em>${csE(c.span)}</em>`:''}`;
+  $('#cs-title').style.setProperty('--pin',col.pin);
+  $('#cs-sub').innerHTML=`${csPeriod(c)} · ${st.filled} ฉบับ · <b>${csHr(st.min)} ชม.</b>${c.note?`<br>${csE(c.note)}`:''}`;
+  $('#cs-tabs').innerHTML=csRows.map((it,i)=>it.kind==='div'?`<button class="tab" data-fgo="${i}" style="--pc:${CS_MONTH_C}"><span class="dot"></span>${csE(it.short)}<i>${it.filled}</i></button>`:'').join('');
+  $('#cs-stack').innerHTML=csRows.length?csRows.map(csItemHTML).join('')
+    :`<div class="cs-nodoc"><img src="${c.tbd?CAT.sleep:CAT.sad}" alt=""><h2>${c.tbd?'ยังไม่เริ่มสำนวนนี้':'สำนวนนี้ยังไม่มีเอกสาร'}</h2>
+      <p>${csPeriod(c)}<br>${c.tbd?'กด "แก้ไขสำนวน" เพื่อกำหนดวันเริ่ม–จบ':'ยังไม่มีบันทึกงานในช่วงนี้'}</p>
+      <div class="cs-acts"><button class="main" style="--pc:${col.pin}" ${c.tbd?'data-cs-editcase':`data-cs-new="${c.from||''}"`}>${c.tbd?CS_PEN+'กำหนดวัน':CS_PLUS+'เพิ่มบันทึก'}</button></div></div>`;
+  $('#cs-ticks').innerHTML=csRows.map((it,i)=>`<i data-i="${i}" class="${it.kind==='div'?'dv':it.empty?'e':''}" style="--r:${csRatio(i)};--pc:${csColorOf(it)}"></i>`).join('');
+  const o=csIsOpen(c), sp=csStamp(c), sw=$('#cs-sw');
+  sw.setAttribute('aria-checked',String(o));sw.style.setProperty('--sc',sp.c);
+  sw.querySelector('span').textContent=o?(c.tbd?'เปิดสำนวน · รอเริ่ม':'เปิดสำนวนอยู่'):'ปิดสำนวนแล้ว';
+  $('#cs-case').classList.toggle('closed',!o);
+  csLayout();
+}
+function csShow(v){
+  $('#cs-boardview').classList.toggle('on',v==='board');
+  $('#cs-case').classList.toggle('on',v==='case');
+  if(v==='board')csC=null;
+  window.scrollTo(0,0);
+}
+function csOpenCase(id){
+  const c=csFind(id);if(!c)return;
+  csC=c;csShow('case');csRenderCase();buzz(10,'pop');
+}
+function csRender(){
+  if(!state.caseBook)return;
+  if(csC&&csFind(csC.id)){csC=csFind(csC.id);csRenderCase(csRowKey(csRows[csCur]));}
+  else{if(csC)csShow('board');}
+  csRenderBoard();
+}
+
+/* ---------- เพิ่มบันทึกจากสำนวน ---------- */
+let csTypePicked='web', csAlsoPicked=[];
+function csRenderTypePick(){
+  $('#l-type').innerHTML=Object.keys(TYPES).map(k=>`<button type="button" data-cs-type="${k}" class="${k===csTypePicked?'on':''}" style="--pc:${TYPES[k].c}">${TYPES[k].name}</button>`).join('');
+  $('#l-also').innerHTML=Object.keys(TYPES).filter(k=>k!==csTypePicked).map(k=>`<button type="button" data-cs-also="${k}" class="${csAlsoPicked.includes(k)?'on':''}" style="--pc:${TYPES[k].c}">${TYPES[k].name}</button>`).join('');
+}
+function csSetTypes(t,also){csTypePicked=TYPES[t]?t:'web';csAlsoPicked=(also||[]).filter(a=>TYPES[a]&&a!==csTypePicked);csRenderTypePick();}
+function csNewLog(date){
+  openLSheet(null);
+  const c=csC;
+  if(date)$('#l-date').value=date;
+  if(c&&c.st&&c.en){$('#l-start').value=c.st;$('#l-end').value=c.en;}
+  const prev=effLogs().filter(e=>c&&e.date>=c.from&&e.date<=c.to).sort((a,b)=>b.date.localeCompare(a.date))[0];
+  if(prev){csSetTypes(typeOf(prev),[]);renderProjectOptions(prev.project);}
+}
+
+/* ---------- ชีตสำนวน ---------- */
+let csEdit=null; // {kind:'group'|'case', id, group}
+let csDays=[3], csColor=0;
+function csOpenSheet(kind,id,groupId){
+  const book=csBook();
+  csEdit={kind,id:id||null,group:groupId||null};
+  $('#cs-f-groupmode').classList.toggle('hide',kind!=='group');
+  $('#cs-f-casemode').classList.toggle('hide',kind!=='case');
+  if(kind==='group'){
+    const g=id?book.groups.find(x=>x.id===id):null;
+    $('#cs-sh-title').textContent=g?'แก้ไขสำนวนหลัก':'สร้างสำนวนหลัก';
+    $('#cs-g-title').value=g?g.title:'';
+    $('#cs-sh-del').style.display=g?'block':'none';
+  }else{
+    const c=id?csFind(id):null;
+    $('#cs-sh-title').textContent=c?'แก้ไขสำนวนย่อย':'เพิ่มสำนวนย่อย';
+    $('#cs-c-title').value=c?c.title:'';
+    $('#cs-c-span').value=c?c.span||'':'';
+    $('#cs-c-group').innerHTML=book.groups.map(g=>`<option value="${g.id}" ${(c?c._g:groupId)===g.id?'selected':''}>${csE(g.title)}</option>`).join('');
+    $('#cs-c-tbd').checked=c?!!c.tbd:false;
+    $('#cs-c-from').value=c?c.from||'':csToday();
+    $('#cs-c-to').value=c?c.to||'':'';
+    $('#cs-c-mode').value=c?c.mode||'daily':'daily';
+    csDays=c&&c.days&&c.days.length?[...c.days]:[3];
+    $('#cs-c-offcount').value=c?c.offCount||0:0;
+    $('#cs-c-st').value=c?c.st||'':'08:00';$('#cs-c-en').value=c?c.en||'':'17:00';
+    $('#cs-c-note').value=c?c.note||'':'';
+    csColor=c?c.color||0:(csAllCases().length%CS_COLORS.length);
+    csSyncCaseForm();
+    $('#cs-sh-del').style.display=c?'block':'none';
+  }
+  lockPage();$('#scrim').classList.add('on');$('#csheet').classList.add('on');
+  setTimeout(()=>(kind==='group'?$('#cs-g-title'):$('#cs-c-title')).focus(),300);
+}
+function csSyncCaseForm(){
+  const mode=$('#cs-c-mode').value, tbd=$('#cs-c-tbd').checked;
+  $('#cs-c-from').disabled=$('#cs-c-to').disabled=tbd;
+  $('#cs-c-days').classList.toggle('hide',mode!=='weekday');
+  $('#cs-c-days').innerHTML=TH_D.map((d,i)=>`<button type="button" data-cs-day="${i}" class="${csDays.includes(i)?'on':''}">${d}</button>`).join('');
+  $('#cs-c-offcount').closest('.f').classList.toggle('hide',mode!=='daily');
+  $('#cs-c-colors').innerHTML=CS_COLORS.map((c,i)=>`<button type="button" data-cs-color="${i}" class="${i===csColor?'on':''}" style="--fc:${c.fc};--pin:${c.pin}" aria-label="สีที่ ${i+1}"></button>`).join('');
+}
+function csCloseSheet(){if(!$('#csheet').classList.contains('on'))return;$('#csheet').classList.remove('on');$('#scrim').classList.remove('on');csEdit=null;unlockPage();}
+function csSaveSheet(){
+  const book=csBook(), ed=csEdit;if(!ed)return;
+  if(ed.kind==='group'){
+    const title=$('#cs-g-title').value.trim();
+    if(!title){play($('#cs-g-title'),'shake',400);toast('ใส่ชื่อสำนวนหลักก่อนนะ',true);return;}
+    if(ed.id)book.groups.find(x=>x.id===ed.id).title=title;
+    else book.groups.unshift({id:'g-'+Date.now().toString(36),title,cases:[]});
+  }else{
+    const title=$('#cs-c-title').value.trim(), tbd=$('#cs-c-tbd').checked, from=$('#cs-c-from').value, to=$('#cs-c-to').value, mode=$('#cs-c-mode').value;
+    if(!title){play($('#cs-c-title'),'shake',400);toast('ใส่ชื่อสำนวนก่อนนะ',true);return;}
+    if(!tbd&&(!from||!to)){toast('ใส่วันเริ่มและวันจบ หรือติ๊กยังไม่กำหนดวัน',true);return;}
+    if(!tbd&&from>to){toast('วันจบต้องไม่ก่อนวันเริ่ม',true);return;}
+    if(mode==='weekday'&&!csDays.length){toast('เลือกวันทำงานอย่างน้อย 1 วัน',true);return;}
+    const st=$('#cs-c-st').value, en=$('#cs-c-en').value;
+    const data={title,span:$('#cs-c-span').value.trim(),tbd,from:tbd?'':from,to:tbd?'':to,mode,days:[...csDays].sort(),
+      offCount:Math.max(0,+$('#cs-c-offcount').value||0),st,en,note:$('#cs-c-note').value.trim(),color:csColor};
+    const gid=$('#cs-c-group').value;
+    let c=ed.id?csFind(ed.id):null;
+    if(c){
+      const old=book.groups.find(x=>x.id===c._g);
+      Object.assign(c,data);
+      if(old&&old.id!==gid){old.cases=old.cases.filter(x=>x!==c);book.groups.find(x=>x.id===gid).cases.push(c);}
+    }else{
+      c=Object.assign({id:'c-'+Date.now().toString(36),off:[]},data);
+      book.groups.find(x=>x.id===gid).cases.push(c);
+    }
+    book.groups.forEach(g=>g.cases.forEach(x=>delete x._g));
+    if(csC&&csC.id===c.id)csC=c;
+  }
+  buzz(14,'save');save();csCloseSheet();csRender();toast('บันทึกสำนวนแล้ว');
+}
+function csDeleteFromSheet(){
+  const book=csBook(), ed=csEdit;if(!ed||!ed.id)return;
+  if(ed.kind==='group'){
+    const g=book.groups.find(x=>x.id===ed.id);
+    if(!window.confirm(`ลบสำนวนหลัก “${g.title}” และสำนวนย่อยข้างใน ${g.cases.length} สำนวน ใช่ไหม?\n(บันทึกงานยังอยู่ ไม่ถูกลบ)`))return;
+    book.groups=book.groups.filter(x=>x!==g);
+  }else{
+    const c=csFind(ed.id);
+    if(!window.confirm(`ลบสำนวน “${c.title}” ใช่ไหม?\n(บันทึกงานยังอยู่ ไม่ถูกลบ)`))return;
+    book.groups.forEach(g=>g.cases=g.cases.filter(x=>x.id!==c.id));
+    if(csC&&csC.id===c.id)csC=null;
+  }
+  book.groups.forEach(g=>g.cases.forEach(x=>delete x._g));
+  buzz(12,'del');save();csCloseSheet();csShow(csC?'case':'board');csRender();toast('ลบสำนวนแล้ว');
+}
+
+/* ---------- อีเวนต์ ---------- */
+document.body.addEventListener('click',e=>{
+  const t=e.target;
+  const f=t.closest('[data-fgo]');if(f){if(+f.dataset.fgo!==csCur){csGo(+f.dataset.fgo);csFlash();}return;}
+  const c=t.closest('[data-case]');if(c){csOpenCase(c.dataset.case);return;}
+  const ng=t.closest('[data-cs-newgroup]');if(ng){buzz(10,'tap');csOpenSheet('group');return;}
+  const eg=t.closest('[data-cs-group]');if(eg){buzz(10,'tap');csOpenSheet('group',eg.dataset.csGroup);return;}
+  const nc=t.closest('[data-cs-newcase]');if(nc){buzz(10,'tap');csOpenSheet('case',null,nc.dataset.csNewcase);return;}
+  if(t.closest('[data-cs-editcase]')){buzz(10,'tap');csOpenSheet('case',csC.id);return;}
+  const nl=t.closest('[data-cs-new]');if(nl){buzz(10,'tap');csNewLog(nl.dataset.csNew);return;}
+  const off=t.closest('[data-cs-off]');
+  if(off&&csC){
+    const ds=off.dataset.csOff;csC.off=csC.off||[];
+    csC.off=csC.off.includes(ds)?csC.off.filter(x=>x!==ds):csC.off.concat(ds);
+    buzz(10,'pop');save();csRender();return;
+  }
+  const ty=t.closest('[data-cs-type]');if(ty){csTypePicked=ty.dataset.csType;csAlsoPicked=csAlsoPicked.filter(a=>a!==csTypePicked);csRenderTypePick();buzz(7,'tap');return;}
+  const al=t.closest('[data-cs-also]');if(al){const k=al.dataset.csAlso;csAlsoPicked=csAlsoPicked.includes(k)?csAlsoPicked.filter(a=>a!==k):csAlsoPicked.concat(k);csRenderTypePick();buzz(7,'tap');return;}
+  const dy=t.closest('[data-cs-day]');if(dy){const d=+dy.dataset.csDay;csDays=csDays.includes(d)?csDays.filter(x=>x!==d):csDays.concat(d);csSyncCaseForm();return;}
+  const co=t.closest('[data-cs-color]');if(co){csColor=+co.dataset.csColor;csSyncCaseForm();return;}
+});
+$('#cs-back').onclick=()=>{buzz(8,'tap');csShow('board');csRenderBoard();};
+$('#cs-edit').onclick=()=>{buzz(10,'tap');csOpenSheet('case',csC.id);};
+$('#cs-addlog').onclick=()=>{
+  buzz(10,'tap');const it=csRows[csCur];
+  csNewLog(it&&it.kind==='doc'?it.date:(csC.from&&csC.to&&csToday()>=csC.from&&csToday()<=csC.to?csToday():csC.from||csToday()));
+};
+$('#cs-sw').onclick=()=>{csC.open=!csIsOpen(csC);save();csRender();buzz(10,'pop');};
+$('#cs-sh-close').onclick=()=>{buzz(8,'tap');csCloseSheet();};
+$('#cs-sh-save').onclick=csSaveSheet;
+$('#cs-sh-del').onclick=csDeleteFromSheet;
+$('#cs-c-mode').addEventListener('change',csSyncCaseForm);
+$('#cs-c-tbd').addEventListener('change',csSyncCaseForm);
+const csRailEl=$('#cs-rail');
+function csFlash(){csRailEl.classList.add('show');clearTimeout(csShowT);csShowT=setTimeout(()=>csRailEl.classList.remove('show'),900);}
+function csScrub(cy){
+  const b=csRailEl.getBoundingClientRect(), r=Math.max(0,Math.min(1,(cy-b.top-22)/(b.height-44)));
+  $('#cs-paw').style.setProperty('--r',r);csGo(Math.round(r*(csRows.length-1)));
+}
+csRailEl.addEventListener('pointerdown',e=>{if(!csRows.length)return;csDrag=true;csRailEl.setPointerCapture(e.pointerId);csRailEl.classList.add('drag');csScrub(e.clientY);});
+csRailEl.addEventListener('pointermove',e=>{if(csDrag)csScrub(e.clientY);});
+const csEndDrag=()=>{if(!csDrag)return;csDrag=false;csRailEl.classList.remove('drag');$('#cs-paw').style.setProperty('--r',csRatio(csCur));csFlash();};
+csRailEl.addEventListener('pointerup',csEndDrag);csRailEl.addEventListener('pointercancel',csEndDrag);
+let csWheel=0;
+csRailEl.addEventListener('wheel',e=>{e.preventDefault();csWheel+=e.deltaY;if(Math.abs(csWheel)>40){csGo(csCur+Math.sign(csWheel));csWheel=0;csFlash();}},{passive:false});
+document.addEventListener('keydown',e=>{
+  if(!$('#cs-case').classList.contains('on')||document.body.dataset.page!=='log'||document.querySelector('.sheet.on'))return;
+  if(/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||''))return;
+  if(e.key==='Escape'){csShow('board');csRenderBoard();}
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();csGo(csCur+1);csFlash();}
+  if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();csGo(csCur-1);csFlash();}
+});
+let csSX=0,csSY=0;
+$('#cs-stack').addEventListener('touchstart',e=>{csSX=e.touches[0].clientX;csSY=e.touches[0].clientY;},{passive:true});
+$('#cs-stack').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-csSX, dy=e.changedTouches[0].clientY-csSY;
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.4)csGo(csCur+(dx<0?1:-1));
+});
 
 load();
 </script>
